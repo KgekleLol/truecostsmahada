@@ -706,6 +706,26 @@
             </h2>
             <div id="education-references" class="mt-6 grid gap-3 sm:grid-cols-3"></div>
           </div>
+
+          <div id="education-modal" class="fixed inset-0 z-50 hidden items-end justify-center bg-slate-950/50 p-0 backdrop-blur-sm sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="education-modal-title">
+            <div class="flex max-h-[94vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:max-h-[90vh] sm:rounded-3xl">
+              <div class="flex items-center justify-between border-b border-slate-200 px-4 py-4 sm:px-7">
+                <div class="flex items-center gap-3">
+                  <span id="education-modal-number" class="grid size-10 place-items-center rounded-2xl bg-emerald-50 text-[10px] font-extrabold text-emerald-700"></span>
+                  <span>
+                    <span id="education-modal-subtitle" class="block text-[8px] font-extrabold tracking-widest text-emerald-700"></span>
+                    <strong id="education-modal-title" class="mt-1 block text-sm"></strong>
+                  </span>
+                </div>
+                <button id="education-modal-close" aria-label="Tutup detail edukasi" class="grid size-11 place-items-center rounded-full bg-slate-100 text-lg text-slate-500 transition hover:bg-slate-200 hover:text-slate-900" type="button">×</button>
+              </div>
+              <div id="education-modal-content" class="overflow-y-auto px-4 py-6 sm:px-7 sm:py-7"></div>
+              <div class="grid grid-cols-2 gap-2 border-t border-slate-200 bg-white p-4 sm:flex sm:justify-between sm:px-7">
+                <button id="education-modal-prev" class="min-h-11 rounded-xl border border-slate-200 bg-white px-4 text-[10px] font-extrabold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-800" type="button">Tahap sebelumnya</button>
+                <button id="education-modal-next" class="min-h-11 rounded-xl bg-emerald-600 px-4 text-[10px] font-extrabold text-white transition hover:bg-emerald-700" type="button">Tahap berikutnya</button>
+              </div>
+            </div>
+          </div>
         </section>
       </main>
 
@@ -1005,7 +1025,7 @@
           </button>
         </div>
 
-        <div id="input-manual" class="mt-5 grid gap-6" hidden></div>
+        <div id="input-manual" class="mt-5 grid gap-4" hidden></div>
       </section>
     </div>
 
@@ -1320,6 +1340,7 @@
       </section>
     </div>
 
+    <script src="./truecost-ai-classifier.js"></script>
     <script type="module">
       /* ============================================================
          TrueCost SMAHADA — single-file app
@@ -1359,17 +1380,95 @@
       const productsById = Object.fromEntries(categories.map((item) => [item.id, item]));
       const categoryGroups = [...new Set(categories.map((item) => item.group))];
       const AI_LABELS = {
-        chips: "Snack Keripik",
-        kotak_snack: "Kotak Snack / Kardus",
-        min_sachet: "Minuman Sachet",
+        botplas: "plastic_bottle",
+        chips: "chips",
+        km_plastk: "biscuit",
+        min_sachet: "min_sachet",
+        pocky: "snack_box",
+        suskot: "milk_carton",
       };
 
       const educationStages = [
-        { number: "01", title: "Bahan Baku", description: "Gandum, gula, minyak, susu, air, dan bahan kemasan diambil dari alam. Cara budidaya dan ekstraksinya menentukan jejak awal produk.", question: "Dari mana bahan utama jajanan ini berasal?" },
-        { number: "02", title: "Produksi", description: "Pabrik memakai energi dan air untuk mengolah bahan, memasak, mendinginkan, lalu membungkus produk agar aman dijual.", question: "Berapa banyak energi dan kemasan yang digunakan?" },
-        { number: "03", title: "Distribusi", description: "Produk berpindah dari pabrik ke gudang, distributor, dan kantin. Jarak, kendaraan, serta pendinginan menambah emisi.", question: "Seberapa jauh produk ini melakukan perjalanan?" },
-        { number: "04", title: "Konsumsi", description: "Pilihan porsi, kandungan gula dan natrium, serta frekuensi membeli berdampak pada kesehatan dan total jejak pribadi.", question: "Apakah manfaatnya sebanding dengan dampaknya?" },
-        { number: "05", title: "Setelah Dipakai", description: "Kemasan dapat digunakan ulang, dipilah, didaur ulang, dibakar, atau berakhir di TPA. Pilihan kita menentukan tahap akhirnya.", question: "Ke mana kemasan ini pergi setelah dibuang?" },
+        {
+          number: "01",
+          title: "Bahan Baku",
+          subtitle: "Dari mana makanan berasal?",
+          description: "Kenali asal bahan pangan dan sumber daya yang dibutuhkan sebelum makanan sampai ke tanganmu.",
+          icon: "⌁",
+          points: ["Bahan makanan dapat berasal dari pertanian, peternakan, atau sumber lain.", "Lahan, air, benih, dan energi dibutuhkan sejak tahap paling awal.", "Petani dan produsen bahan pangan berperan menjaga mutu serta ketersediaan bahan."],
+          activityTitle: "Food Origin Detective",
+          activityPrompt: "Keripik kentang renyah berasal dari bahan utama yang mana?",
+          options: [
+            { label: "Kentang", feedback: "Tepat. Kentang ditanam, dipanen, dibersihkan, lalu dikirim untuk diolah. Air, lahan, benih, dan tenaga petani sudah terlibat sebelum proses produksi dimulai." },
+            { label: "Tepung terigu", feedback: "Tepung terigu bisa ada pada beberapa makanan, tetapi bahan utama keripik kentang adalah kentang yang ditanam dan dipanen oleh petani." },
+            { label: "Beras", feedback: "Beras adalah bahan utama banyak jajanan lain. Untuk keripik kentang, bahan utamanya berasal dari tanaman kentang." },
+          ],
+          reflection: "Bahan pangan apa yang paling sering kamu temui di jajanan kantin?",
+        },
+        {
+          number: "02",
+          title: "Produksi",
+          subtitle: "Apa yang ada di balik rasa?",
+          description: "Pahami bagaimana makanan diproses dan informasi apa yang bisa kita pelajari dari labelnya.",
+          icon: "▦",
+          points: ["Pengolahan mengubah bahan mentah menjadi makanan yang aman dan siap dinikmati.", "Daftar komposisi ditulis dari bahan dengan jumlah terbanyak.", "Nilai gizi perlu dibaca bersama ukuran dan jumlah sajian per kemasan."],
+          activityTitle: "Food Label Detective",
+          activityPrompt: "Contoh label: 2 sajian per kemasan, natrium 180 mg per sajian. Jika kamu makan seluruh kemasan, berapa natrium yang dikonsumsi?",
+          options: [
+            { label: "180 mg", feedback: "Angka 180 mg berlaku untuk satu sajian. Karena satu kemasan berisi dua sajian, jumlahnya perlu dikalikan dua." },
+            { label: "360 mg", feedback: "Benar. Dua sajian × 180 mg berarti 360 mg natrium untuk seluruh kemasan. Data ini hanya contoh ilustratif." },
+            { label: "30 mg", feedback: "Angka berat sajian bukan kandungan natrium. Cek satuan dan jumlah sajian saat membaca label." },
+          ],
+          reflection: "Bagian label apa yang ingin kamu periksa sebelum memilih jajanan?",
+        },
+        {
+          number: "03",
+          title: "Distribusi",
+          subtitle: "Bagaimana makanan sampai kepadamu?",
+          description: "Pelajari perjalanan makanan dan bagaimana promosi dapat memengaruhi keputusan pembelian.",
+          icon: "↗",
+          points: ["Makanan bergerak dari produsen menuju gudang, toko, warung, atau kantin.", "Kemasan dan penyimpanan membantu menjaga makanan tetap aman selama perjalanan.", "Diskon dan bundling dirancang agar penawaran terasa lebih menarik."],
+          activityTitle: "Promo Trap",
+          activityPrompt: "Kamu hanya membutuhkan satu camilan. Pilih satu seharga Rp5.000 atau tiga seharga Rp12.000?",
+          options: [
+            { label: "Beli satu seharga Rp5.000", feedback: "Pilihan ini sesuai kebutuhan saat ini. Total belanja lebih kecil dan tidak ada dua bungkus tambahan yang harus dihabiskan." },
+            { label: "Beli tiga seharga Rp12.000", feedback: "Harga per bungkus lebih murah, tetapi cek apakah dua sisanya benar-benar akan dikonsumsi. Promo bermanfaat jika jumlahnya sesuai kebutuhan." },
+          ],
+          reflection: "Kapan promo bundling benar-benar berguna bagimu?",
+        },
+        {
+          number: "04",
+          title: "Konsumsi",
+          subtitle: "Lapar mata atau lapar perut?",
+          description: "Kenali apa yang mendorongmu membeli makanan dan latih keputusan yang lebih sadar.",
+          icon: "♡",
+          points: ["Lapar fisik biasanya muncul bertahap; keinginan visual dapat muncul tiba-tiba.", "Kemasan, tren, diskon, dan pilihan teman dapat menjadi pemicu.", "Jeda singkat memberi ruang untuk mengecek rasa lapar, kebutuhan, dan anggaran."],
+          activityTitle: "Lapar Mata Detector",
+          activityPrompt: "Kamu baru selesai makan siang. Kemasan camilan baru terlihat sangat menarik. Apa yang kamu lakukan?",
+          options: [
+            { label: "Langsung beli sebelum kehabisan", feedback: "Respons spontan itu wajar. Coba beri jeda satu menit untuk mengecek apakah kamu lapar, penasaran, atau hanya tertarik kemasannya." },
+            { label: "Jeda sebentar dan cek rasa lapar", feedback: "Pilihan sadar memberi ruang untuk membedakan rasa lapar dengan ketertarikan visual. Kamu tetap boleh membeli jika setelah mengecek memang menginginkannya." },
+            { label: "Minta teman memilihkan", feedback: "Pendapat teman bisa membantu, tetapi keputusan yang sesuai kebutuhan dan anggaran tetap ada di tanganmu." },
+          ],
+          reflection: "Pemicu mana yang paling sering memengaruhi pilihan jajananmu?",
+          focus: true,
+        },
+        {
+          number: "05",
+          title: "Setelah Dipakai",
+          subtitle: "Ke mana sisa makanan pergi?",
+          description: "Pelajari cara mengurangi pemborosan makanan dan memahami dampak sisa konsumsi.",
+          icon: "♧",
+          points: ["Food waste menyia-nyiakan makanan sekaligus sumber daya yang dipakai untuk membuatnya.", "Merencanakan porsi membantu mengurangi makanan yang tidak termakan.", "Sisa organik dan kemasan sebaiknya dipisahkan sesuai fasilitas yang tersedia."],
+          activityTitle: "The Last Bite",
+          activityPrompt: "Setelah istirahat, rotimu masih tersisa setengah dan belum lama berada di luar wadah. Apa yang kamu lakukan?",
+          options: [
+            { label: "Simpan tertutup untuk dimakan segera", feedback: "Ini dapat menjadi pilihan jika makanan masih layak, tangan dan wadah bersih, serta penyimpanannya aman." },
+            { label: "Berikan ke teman tanpa bertanya", feedback: "Berbagi bisa mengurangi sisa, tetapi tanyakan dulu dan perhatikan kebersihan serta alergi teman." },
+            { label: "Langsung buang semuanya", feedback: "Membuang perlu dilakukan jika makanan tidak aman. Jika masih layak, menyimpan dengan benar dapat mencegah pemborosan." },
+          ],
+          reflection: "Apa satu cara realistis untuk menyisakan lebih sedikit makanan besok?",
+        },
       ];
       const educationReferences = [
         { title: "BBC Science Focus", description: "Penjelasan populer tentang carbon footprint dan cara menghitungnya.", href: "https://www.sciencefocus.com/planet-earth/what-is-a-carbon-footprint" },
@@ -1873,51 +1972,46 @@
          ------------------------------------------------------------ */
       function renderManualCategories() {
         const container = el("input-manual");
-        container.innerHTML = categoryGroups
-          .map(
-            (group) => `<div>
-              <strong class="text-[9px] tracking-wide text-slate-500">${escapeHtml(group)}</strong>
-              <div class="mt-2 grid gap-2">
-                ${categories
-                  .filter((product) => product.group === group)
-                  .map(
-                    (product) => `<button type="button" data-product="${product.id}" class="flex items-center justify-between rounded-2xl border border-slate-200 p-4 text-left transition hover:border-emerald-300 hover:bg-emerald-50">
-                      <span>
-                        <strong class="block text-[10px]">${escapeHtml(product.label)}</strong>
-                        <small class="mt-1 block text-[8px] text-slate-500">${escapeHtml(
-                          `${product.carbonRange} · ${product.nutritionNote}`,
-                        )}</small>
-                      </span>
-                      <svg aria-hidden="true" fill="none" height="15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="15"><path d="m9 18 6-6-6-6"/></svg>
-                    </button>`,
-                  )
-                  .join("")}
-              </div>
-            </div>`,
-          )
-          .join("");
-
-        container.querySelectorAll("[data-product]").forEach((button) => {
-          button.addEventListener("click", () => selectManual(button.dataset.product));
-        });
+        container.innerHTML = `
+          <label class="text-[9px] font-extrabold tracking-wide text-slate-500" for="manual-product-select">Pilih kategori jajanan</label>
+          <select id="manual-product-select" class="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-[10px] font-bold text-slate-700">
+            ${categoryGroups.map((group) => `<optgroup label="${escapeHtml(group)}">${categories
+              .filter((product) => product.group === group)
+              .map((product) => `<option value="${product.id}">${escapeHtml(product.label)} · ${escapeHtml(product.carbonRange)}</option>`)
+              .join("")}</optgroup>`).join("")}
+          </select>
+          <p id="manual-product-note" class="text-[9px] leading-5 text-slate-500"></p>
+          <button id="btn-select-manual-product" class="h-12 rounded-2xl bg-emerald-600 text-[10px] font-extrabold text-white" type="button">Gunakan kategori ini</button>`;
+        const select = el("manual-product-select");
+        const updateNote = () => {
+          const product = productsById[select.value];
+          el("manual-product-note").textContent = `${product.carbonRange} · ${product.nutritionNote}`;
+        };
+        select.addEventListener("change", updateNote);
+        el("btn-select-manual-product").addEventListener("click", () => selectManual(select.value));
+        updateNote();
       }
 
       function renderEducation() {
         el("education-stages").innerHTML = educationStages
           .map(
-            (stage) => `<details class="group min-h-56 rounded-2xl border border-slate-200 bg-white p-5 open:border-emerald-200 open:bg-emerald-50">
-              <summary class="cursor-pointer list-none">
-                <span class="flex items-start justify-between">
-                  <span class="text-[8px] font-extrabold tracking-widest text-emerald-600">${stage.number}</span>
-                  <span class="grid size-7 place-items-center rounded-full bg-slate-100 text-sm text-slate-500 group-open:rotate-45">+</span>
-                </span>
-                <strong class="mt-8 block text-base">${escapeHtml(stage.title)}</strong>
-              </summary>
-              <p class="mt-3 text-[9px] leading-5 text-slate-500">${escapeHtml(stage.description)}</p>
-              <p class="mt-4 border-t border-emerald-200 pt-4 text-[9px] font-bold leading-5 text-emerald-800">Tanyakan: ${escapeHtml(
-                stage.question,
-              )}</p>
-            </details>`,
+            (stage, index) => `<button type="button" data-education-stage="${index}" class="group flex min-h-64 flex-col rounded-2xl border p-5 text-left transition duration-300 hover:-translate-y-1 hover:shadow-xl ${
+              stage.focus
+                ? "border-emerald-400 bg-emerald-950 text-white shadow-lg shadow-emerald-950/10"
+                : "border-slate-200 bg-white text-slate-950 hover:border-emerald-300"
+            }">
+              <span class="flex w-full items-start justify-between">
+                <span class="text-[8px] font-extrabold tracking-widest ${stage.focus ? "text-emerald-300" : "text-emerald-600"}">${stage.number}</span>
+                <span class="grid size-9 place-items-center rounded-full ${stage.focus ? "bg-emerald-800 text-emerald-100" : "bg-slate-100 text-slate-500"} text-base transition group-hover:rotate-90">+</span>
+              </span>
+              <span class="mt-5 flex items-end justify-between gap-4">
+                <span class="grid size-12 place-items-center rounded-2xl ${stage.focus ? "bg-emerald-800 text-emerald-200" : "bg-emerald-50 text-emerald-700"} text-xl">${stage.icon}</span>
+                ${stage.focus ? '<span class="rounded-full bg-emerald-400 px-2.5 py-1 text-[7px] font-extrabold tracking-wide text-emerald-950 uppercase">Fokus utama</span>' : ""}
+              </span>
+              <strong class="mt-5 block text-base">${escapeHtml(stage.title)}</strong>
+              <span class="mt-1 block text-[9px] font-bold ${stage.focus ? "text-emerald-200" : "text-slate-700"}">${escapeHtml(stage.subtitle)}</span>
+              <span class="mt-3 block text-[9px] leading-5 ${stage.focus ? "text-emerald-50/80" : "text-slate-500"}">${escapeHtml(stage.description)}</span>
+            </button>`,
           )
           .join("");
 
@@ -1930,6 +2024,75 @@
             </a>`,
           )
           .join("");
+
+        let activeStage = 0;
+
+        function closeEducationModal() {
+          const modal = el("education-modal");
+          modal.classList.add("hidden");
+          modal.classList.remove("flex");
+          document.body.style.overflow = "";
+        }
+
+        function renderEducationModal(index) {
+          activeStage = index;
+          const stage = educationStages[index];
+          el("education-modal-number").textContent = stage.icon;
+          el("education-modal-subtitle").textContent = `TAHAP ${stage.number} · RANTAI MAKANAN`;
+          el("education-modal-title").textContent = stage.title;
+          el("education-modal-content").innerHTML = `
+            <span class="text-[8px] font-extrabold tracking-widest text-slate-400 uppercase">${escapeHtml(stage.subtitle)}</span>
+            <p class="mt-3 max-w-2xl text-sm leading-7 font-bold text-slate-800">${escapeHtml(stage.description)}</p>
+            <div class="mt-6 grid gap-2 sm:grid-cols-2">
+              ${stage.points.map((point, pointIndex) => `<div class="flex gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3"><span class="grid size-6 shrink-0 place-items-center rounded-full bg-emerald-100 text-[8px] font-extrabold text-emerald-700">${pointIndex + 1}</span><p class="text-[9px] leading-5 text-slate-600">${escapeHtml(point)}</p></div>`).join("")}
+            </div>
+            <div class="mt-6 rounded-2xl border ${stage.focus ? "border-emerald-200 bg-emerald-950 text-white" : "border-slate-200 bg-slate-50"} p-4 sm:p-5">
+              <span class="text-[8px] font-extrabold tracking-widest ${stage.focus ? "text-emerald-300" : "text-emerald-700"} uppercase">Aktivitas interaktif</span>
+              <strong class="mt-2 block text-base">${escapeHtml(stage.activityTitle)}</strong>
+              <p class="mt-2 text-[10px] leading-6 ${stage.focus ? "text-emerald-50" : "text-slate-600"}">${escapeHtml(stage.activityPrompt)}</p>
+              <div class="mt-4 grid gap-2">
+                ${stage.options.map((option, optionIndex) => `<button type="button" data-education-option="${optionIndex}" class="min-h-12 rounded-xl border ${stage.focus ? "border-emerald-800 bg-emerald-900/50 text-emerald-50 hover:border-emerald-400" : "border-slate-200 bg-white text-slate-600 hover:border-emerald-300"} px-4 text-left text-[10px] font-bold transition"><span class="mr-3 inline-grid size-6 place-items-center rounded-full border border-current text-[8px]">${String.fromCharCode(65 + optionIndex)}</span>${escapeHtml(option.label)}</button>`).join("")}
+              </div>
+              <div id="education-feedback" class="mt-4 hidden rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-[10px] leading-6 text-emerald-950"></div>
+            </div>
+            <div class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+              <span class="text-[8px] font-extrabold tracking-widest text-amber-800 uppercase">Coba pikirkan</span>
+              <p class="mt-2 text-[10px] leading-6 font-bold text-slate-700">${escapeHtml(stage.reflection)}</p>
+            </div>`;
+
+          el("education-modal-prev").disabled = index === 0;
+          el("education-modal-prev").classList.toggle("opacity-40", index === 0);
+          el("education-modal-next").textContent = index === educationStages.length - 1 ? "Kembali ke daftar" : "Tahap berikutnya";
+          el("education-modal-content").querySelectorAll("[data-education-option]").forEach((button) => {
+            button.addEventListener("click", () => {
+              el("education-modal-content").querySelectorAll("[data-education-option]").forEach((item) => item.classList.remove("border-emerald-500", "bg-emerald-50", "text-emerald-900"));
+              button.classList.add("border-emerald-500", "bg-emerald-50", "text-emerald-900");
+              const feedback = el("education-feedback");
+              feedback.textContent = stage.options[Number(button.dataset.educationOption)].feedback;
+              feedback.classList.remove("hidden");
+            });
+          });
+        }
+
+        el("education-stages").querySelectorAll("[data-education-stage]").forEach((button) => {
+          button.addEventListener("click", () => {
+            renderEducationModal(Number(button.dataset.educationStage));
+            el("education-modal").classList.remove("hidden");
+            el("education-modal").classList.add("flex");
+            document.body.style.overflow = "hidden";
+          });
+        });
+        el("education-modal-close").addEventListener("click", closeEducationModal);
+        el("education-modal").addEventListener("click", (event) => {
+          if (event.target === el("education-modal")) closeEducationModal();
+        });
+        el("education-modal-prev").addEventListener("click", () => {
+          if (activeStage > 0) renderEducationModal(activeStage - 1);
+        });
+        el("education-modal-next").addEventListener("click", () => {
+          if (activeStage < educationStages.length - 1) renderEducationModal(activeStage + 1);
+          else closeEducationModal();
+        });
       }
 
       function renderConfetti() {
@@ -2036,106 +2199,6 @@
         });
       }
 
-      class FrameVideoClassifier {
-        constructor(classifier) {
-          this.classifier = classifier;
-          this.canvas = document.createElement("canvas");
-          this.width = 96;
-          this.height = 96;
-        }
-
-        async init() {
-          await this.classifier.init();
-          const properties = this.classifier.getProperties();
-          const inferredSide = Math.round(Math.sqrt(properties.frame_sample_count || 9216));
-          this.width = properties.image_input_width || inferredSide || 96;
-          this.height = properties.image_input_height || inferredSide || 96;
-          this.canvas.width = this.width;
-          this.canvas.height = this.height;
-        }
-
-        async classify(videoElement) {
-          if (videoElement.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
-            throw new Error("Frame kamera belum siap.");
-          }
-          const context = this.canvas.getContext("2d", { willReadFrequently: true });
-          if (!context) throw new Error("Canvas kamera tidak tersedia.");
-          const sourceWidth = videoElement.videoWidth;
-          const sourceHeight = videoElement.videoHeight;
-          const targetRatio = this.width / this.height;
-          const sourceRatio = sourceWidth / sourceHeight;
-          const cropWidth = sourceRatio > targetRatio ? sourceHeight * targetRatio : sourceWidth;
-          const cropHeight = sourceRatio > targetRatio ? sourceHeight : sourceWidth / targetRatio;
-          context.drawImage(
-            videoElement,
-            (sourceWidth - cropWidth) / 2,
-            (sourceHeight - cropHeight) / 2,
-            cropWidth,
-            cropHeight,
-            0,
-            0,
-            this.width,
-            this.height,
-          );
-          const pixels = context.getImageData(0, 0, this.width, this.height).data;
-          const features = new Array(this.width * this.height);
-          for (let pixel = 0, feature = 0; pixel < pixels.length; pixel += 4, feature += 1) {
-            features[feature] =
-              (pixels[pixel] << 16) + (pixels[pixel + 1] << 8) + pixels[pixel + 2];
-          }
-          await new Promise((resolve) => window.setTimeout(resolve, 0));
-          return this.classifier.classify(features);
-        }
-      }
-
-      function createSimulatedClassifier() {
-        const labels = ["chips", "min_sachet", "kotak_snack"];
-        return {
-          simulated: true,
-          async classify() {
-            await new Promise((resolve) => window.setTimeout(resolve, 900));
-            if (Math.random() < 0.18) {
-              return {
-                results: [
-                  { label: "unknown", value: 0.24 + Math.random() * 0.3 },
-                  { label: "chips", value: 0.12 },
-                ],
-              };
-            }
-            const label = labels[Math.floor(Math.random() * labels.length)];
-            const value = 0.62 + Math.random() * 0.35;
-            return {
-              results: [
-                { label, value },
-                { label: "unknown", value: Math.max(0.02, 1 - value) },
-              ],
-            };
-          },
-        };
-      }
-
-      let classifierPromise = null;
-      function initializeClassifier() {
-        if (classifierPromise) return classifierPromise;
-        classifierPromise = (async () => {
-          try {
-            window.Module = {
-              locateFile: (path) =>
-                path.endsWith(".wasm") ? "/model/edge-impulse-standalone.wasm" : path,
-            };
-            await loadScript("edge-impulse-standalone", "./model/edge-impulse-standalone.js");
-            await loadScript("edge-impulse-classifier", "./model/edge-impulse-classifier.js");
-            if (!window.EdgeImpulseClassifier) throw new Error("Model tidak ditemukan.");
-            const classifier = new FrameVideoClassifier(new window.EdgeImpulseClassifier());
-            await classifier.init();
-            return classifier;
-          } catch {
-            return createSimulatedClassifier();
-          }
-        })();
-        return classifierPromise;
-      }
-
       function setScanStatus(message) {
         el("scan-status").textContent = message;
       }
@@ -2144,30 +2207,20 @@
         const video = el("webcam");
         const errorBox = el("scanner-error");
         try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: { ideal: "environment" },
-              width: { ideal: 720 },
-              height: { ideal: 1280 },
-            },
-            audio: false,
-          });
-          state.stream = stream;
-          video.srcObject = stream;
+          await window.TrueCostAIClassifier.startCamera(video);
+          state.stream = video.srcObject;
           errorBox.hidden = true;
-        } catch {
-          errorBox.textContent = "Kamera tidak tersedia pada perangkat ini.";
+        } catch (error) {
+          console.error(error);
+          errorBox.textContent = window.TrueCostAIClassifier.ERROR_MESSAGE;
           errorBox.hidden = false;
+          throw error;
         }
       }
 
       function stopCamera() {
-        if (state.stream) {
-          state.stream.getTracks().forEach((track) => track.stop());
-          state.stream = null;
-        }
-        const video = el("webcam");
-        if (video) video.srcObject = null;
+        window.TrueCostAIClassifier.stopCamera(el("webcam"));
+        state.stream = null;
       }
 
       async function openScanner() {
@@ -2177,35 +2230,34 @@
         el("btn-shutter").disabled = true;
         openModal("scanner");
         setScanStatus("Menyiapkan model analisis...");
-        startCamera();
-        const classifier = await initializeClassifier();
-        state.classifier = classifier;
-        state.modelReady = true;
-        el("btn-shutter").disabled = false;
-        setScanStatus("Posisikan kemasan dengan jelas di dalam bingkai");
+        try {
+          await Promise.all([startCamera(), window.TrueCostAIClassifier.initialize()]);
+          state.modelReady = true;
+          el("btn-shutter").disabled = false;
+          setScanStatus("Posisikan kemasan dengan jelas di dalam bingkai");
+        } catch (error) {
+          console.error(error);
+          stopCamera();
+          setScanStatus(window.TrueCostAIClassifier.ERROR_MESSAGE);
+          el("scanner-error").textContent = window.TrueCostAIClassifier.ERROR_MESSAGE;
+          el("scanner-error").hidden = false;
+        }
       }
 
       async function scanJajanan() {
-        const classifier = state.classifier;
-        if (!classifier || !state.modelReady) {
+        if (!state.modelReady) {
           setScanStatus("Ada kesalahan, silahkan coba lagi");
           return;
         }
         el("btn-shutter").disabled = true;
         setScanStatus("Menganalisis kemasan...");
         try {
-          const prediction = await classifier.classify(el("webcam"));
-          const topResult = [...(prediction.results || [])].sort(
-            (first, second) => second.value - first.value,
-          )[0];
-          const productKey = topResult ? normalizeLabel(topResult.label) : null;
-          if (!topResult || !productKey || topResult.value < 0.6) {
-            setScanStatus("Ada kesalahan, silahkan coba lagi");
-            return;
-          }
+          const prediction = await window.TrueCostAIClassifier.captureAndClassify(el("webcam"));
+          const productKey = AI_LABELS[prediction.label.trim().toLowerCase()];
+          if (!productKey || !productsById[productKey]) throw new Error("Kategori model tidak dikenali.");
           state.detectedKey = productKey;
-          state.detectedLabelOverride = AI_LABELS[String(topResult.label).trim().toLowerCase()] || null;
-          setScanStatus(`Hasil Analisis AI · ${(topResult.value * 100).toFixed(0)}%`);
+          state.detectedLabelOverride = productsById[productKey].label;
+          setScanStatus(`Hasil Analisis AI · ${(prediction.confidence * 100).toFixed(0)}%`);
           stopCamera();
           closeModal("scanner");
           openImpact();
@@ -2221,6 +2273,8 @@
          ------------------------------------------------------------ */
       function openImpact() {
         const product = detectedProduct();
+        const manualSelect = el("manual-product-select");
+        if (manualSelect) manualSelect.value = product.id;
         el("impact-name").textContent = state.detectedLabelOverride || product.label;
         el("impact-note").textContent = product.nutritionNote;
         el("impact-carbon").textContent = product.carbonRange;
