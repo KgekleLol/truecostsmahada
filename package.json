@@ -1,0 +1,19 @@
+{
+  "name": "truecost-smahada",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "TrueCost SMAHADA - edukasi konsumsi etis dan habit tracker jajanan untuk pelajar",
+  "scripts": {
+    "dev": "netlify dev --port 8889",
+    "db:generate": "drizzle-kit generate"
+  },
+  "dependencies": {
+    "@netlify/database": "1.1.0",
+    "drizzle-orm": "1.0.0-beta.22"
+  },
+  "devDependencies": {
+    "@netlify/functions": "3.1.10",
+    "drizzle-kit": "1.0.0-beta.22"
+  }
+}
