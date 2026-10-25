@@ -10,6 +10,10 @@ mkdirSync(dist, { recursive: true });
 
 copyFileSync(join(root, "index.html"), join(dist, "index.html"));
 
+if (existsSync(join(root, "register.html"))) {
+  copyFileSync(join(root, "register.html"), join(dist, "register.html"));
+}
+
 for (const asset of [
   "images",
   "model",
