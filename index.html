@@ -16,9 +16,6 @@
       rel="stylesheet"
     />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script>
       tailwind.config = {
         theme: {
@@ -1351,8 +1348,8 @@
 
       /* ------------------------------------------------------------
          1. KONFIGURASI LAYANAN AKUN
-         Autentikasi dan penyimpanan data ditangani oleh Firebase
-         Authentication + Firestore.
+         Autentikasi dan penyimpanan data ditangani oleh API Vercel
+         dan database PostgreSQL.
          ------------------------------------------------------------ */
       const API_BASE = "/api";
       const TRIAL_MODE_KEY = "isTrialMode";
@@ -1360,19 +1357,6 @@
       const SESSION_KEYS = [TRIAL_MODE_KEY, "truecost-trial-session-v1", "truecost-temporary-token"];
       const AGRIBALYSE = "https://agribalyse.ademe.fr/";
       const OPEN_FOOD_FACTS = "https://world.openfoodfacts.org/";
-      const FIREBASE_CONFIG = {
-        apiKey: "AIzaSyBNswxV5dP01qCOTBmXt5CB_ot7Q6Bh444",
-        authDomain: "truecost-f53c8.firebaseapp.com",
-        projectId: "truecost-f53c8",
-        storageBucket: "truecost-f53c8.firebasestorage.app",
-        messagingSenderId: "241015723025",
-        appId: "1:241015723025:web:00c8e78c54173cbc108db0",
-      };
-      const firebaseApp = firebase.initializeApp(FIREBASE_CONFIG);
-      const firebaseAuth = firebaseApp.auth();
-      const firebaseDb = firebaseApp.firestore();
-      const firebaseUsernameEmail = (username) => `${sanitizeUsername(username)}@truecost-f53c8.firebaseapp.com`;
-      const firebaseReady = firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
       /* ------------------------------------------------------------
          2. KATEGORI JAJANAN (data terpusat)
@@ -1575,63 +1559,58 @@
 
       const detectedProduct = () => productsById[state.detectedKey] || categories[0];
 
+      async function apiRequest(path, options = {}) {
+        const response = await fetch(`/api${path}`, {
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+          ...options,
+        });
+        let payload = {};
+        try {
+          payload = await response.json();
+        } catch {
+          payload = {};
+        }
+        if (!response.ok) {
+          throw new Error(payload.error || "Terjadi kesalahan. Silakan coba lagi.");
+        }
+        return payload;
+      }
+
       async function fetchCurrentUser() {
-        await firebaseReady;
-        const user = firebaseAuth.currentUser;
-        if (!user) return null;
-        return { username: user.displayName || user.email.split("@")[0] };
+        const data = await apiRequest("/auth/me");
+        return data.user || null;
       }
 
       async function registerUser(rawUsername, password) {
-        await firebaseReady;
         const cleanUsername = sanitizeUsername(rawUsername);
         if (cleanUsername.length < 3) {
           throw new Error("Username minimal 3 karakter alfanumerik atau garis bawah.");
         }
         if (String(password).length < 6) throw new Error("Password minimal 6 karakter.");
-        const credential = await firebaseAuth.createUserWithEmailAndPassword(
-          firebaseUsernameEmail(cleanUsername),
-          password,
-        );
-        try {
-          await credential.user.updateProfile({ displayName: cleanUsername });
-        } catch (error) {
-          await credential.user.delete().catch(() => undefined);
-          throw error;
-        }
+        const data = await apiRequest("/auth/register", {
+          method: "POST",
+          body: JSON.stringify({ username: cleanUsername, password }),
+        });
         localStorage.removeItem(TRIAL_MODE_KEY);
-        return { username: cleanUsername };
+        return data.user;
       }
 
       async function loginUser(rawUsername, password) {
-        await firebaseReady;
         const cleanUsername = sanitizeUsername(rawUsername);
         if (cleanUsername.length < 3 || String(password).length < 6) {
           throw new Error("Username atau password salah. Silakan coba lagi.");
         }
-        const credential = await firebaseAuth.signInWithEmailAndPassword(
-          firebaseUsernameEmail(cleanUsername),
-          password,
-        );
+        const data = await apiRequest("/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ username: cleanUsername, password }),
+        });
         localStorage.removeItem(TRIAL_MODE_KEY);
-        return { username: credential.user.displayName || cleanUsername };
+        return data.user;
       }
 
       function accountErrorMessage(error) {
-        const messages = {
-          "auth/email-already-in-use": "Username sudah digunakan, silakan pilih yang lain.",
-          "auth/invalid-email": "Username tidak valid. Gunakan huruf, angka, atau garis bawah.",
-          "auth/invalid-credential": "Username atau password salah. Silakan coba lagi.",
-          "auth/invalid-login-credentials": "Username atau password salah. Silakan coba lagi.",
-          "auth/user-not-found": "Username atau password salah. Silakan coba lagi.",
-          "auth/wrong-password": "Username atau password salah. Silakan coba lagi.",
-          "auth/weak-password": "Password minimal 6 karakter.",
-          "auth/network-request-failed": "Koneksi bermasalah. Periksa internet lalu coba lagi.",
-          "auth/configuration-not-found": "Login Firebase belum diaktifkan. Aktifkan Email/Password di Firebase Console.",
-          "auth/operation-not-allowed": "Login Email/Password belum diaktifkan di Firebase Console.",
-          "permission-denied": "Akses akun ditolak. Pastikan Firestore Rules sudah dipasang.",
-        };
-        return messages[error?.code] || (error instanceof Error ? error.message : "Terjadi kesalahan. Silakan coba lagi.");
+        return error instanceof Error ? error.message : "Terjadi kesalahan. Silakan coba lagi.";
       }
 
       /* ------------------------------------------------------------
@@ -1675,19 +1654,8 @@
       async function refreshAccountLogs() {
         if (state.mode !== "account") return;
         try {
-          const snapshot = await firebaseDb
-            .collection("habitLogs")
-            .where("userId", "==", firebaseAuth.currentUser.uid)
-            .limit(400)
-            .get();
-          state.logs = snapshot.docs
-            .map((doc) => {
-              const data = doc.data();
-              const scannedAt = data.scannedAt?.toDate
-                ? data.scannedAt.toDate()
-                : new Date(data.scannedAt);
-              return { id: doc.id, ...data, scannedAt };
-            })
+          const data = await apiRequest("/logs");
+          state.logs = (data.logs || [])
             .map(toLogEntry)
             .sort((first, second) => second.scannedAt - first.scannedAt);
           renderTracker();
@@ -1736,16 +1704,7 @@
           return;
         }
         try {
-          const user = await new Promise((resolve, reject) => {
-            const unsubscribe = firebaseAuth.onAuthStateChanged(async (authUser) => {
-              unsubscribe();
-              try {
-                resolve(authUser ? await fetchCurrentUser() : null);
-              } catch (error) {
-                reject(error);
-              }
-            }, reject);
-          });
+          const user = await fetchCurrentUser();
           if (user) startAccountSession(user);
           else resetToLoggedOut();
         } catch {
@@ -1756,8 +1715,7 @@
       async function logout() {
         stopCamera();
         try {
-          await firebaseReady;
-          await firebaseAuth.signOut();
+          await apiRequest("/auth/logout", { method: "POST" });
         } catch (error) {
           console.error("Gagal keluar:", error);
         } finally {
@@ -2344,17 +2302,19 @@
 
         try {
           if (state.mode === "account" && state.user) {
-            await firebaseDb.collection("habitLogs").add({
-              userId: firebaseAuth.currentUser.uid,
-              productKey: entry.productKey,
-              productName: entry.productName,
-              decision: entry.decision,
-              carbonGrams: entry.carbonGrams,
-              plasticGrams: entry.plasticGrams,
-              sugarGrams: entry.sugarGrams,
-              sodiumMg: entry.sodiumMg,
-              timezone: entry.timezone,
-              scannedAt,
+            await apiRequest("/logs", {
+              method: "POST",
+              body: JSON.stringify({
+                productKey: entry.productKey,
+                productName: entry.productName,
+                decision: entry.decision,
+                carbonGrams: entry.carbonGrams,
+                plasticGrams: entry.plasticGrams,
+                sugarGrams: entry.sugarGrams,
+                sodiumMg: entry.sodiumMg,
+                timezone: entry.timezone,
+                scannedAt: scannedAt.toISOString(),
+              }),
             });
             state.logs = [entry, ...state.logs];
             renderTracker();
