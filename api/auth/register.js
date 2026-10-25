@@ -1,8 +1,9 @@
-import { cleanUsername, createSession, hashPassword, sessionCookie, sql, send, requestBody } from "../../lib/neon-auth.mjs";
+import { cleanUsername, createSession, ensureSchema, hashPassword, sessionCookie, sql, send, requestBody } from "../../lib/neon-auth.mjs";
 
 export default async function handler(request, response) {
   if (request.method !== "POST") return send(response, 405, { error: "Metode tidak diizinkan." });
   try {
+    await ensureSchema();
     const body = requestBody(request);
     const username = cleanUsername(body.username);
     const password = String(body.password || "");

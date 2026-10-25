@@ -1,8 +1,9 @@
-import { cleanUsername, createSession, sessionCookie, sql, verifyPassword, send, requestBody } from "../../lib/neon-auth.mjs";
+import { cleanUsername, createSession, ensureSchema, sessionCookie, sql, verifyPassword, send, requestBody } from "../../lib/neon-auth.mjs";
 
 export default async function handler(request, response) {
   if (request.method !== "POST") return send(response, 405, { error: "Metode tidak diizinkan." });
   try {
+    await ensureSchema();
     const body = requestBody(request);
     const username = cleanUsername(body.username);
     const rows = await sql`SELECT id, username, password_hash FROM users WHERE username = ${username} LIMIT 1`;

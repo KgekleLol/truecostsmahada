@@ -1,7 +1,8 @@
-import { currentUser, sql, send, requestBody } from "../lib/neon-auth.mjs";
+import { currentUser, ensureSchema, sql, send, requestBody } from "../lib/neon-auth.mjs";
 
 export default async function handler(request, response) {
   try {
+    await ensureSchema();
     const user = await currentUser(request);
     if (!user) return send(response, 401, { error: "Sesi tidak valid. Silakan masuk kembali." });
     if (request.method === "GET") {
