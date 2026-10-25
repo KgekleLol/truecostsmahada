@@ -1,11 +1,11 @@
-import { currentUser } from "../../lib/neon-auth.mjs";
+import { currentUser, send } from "../../lib/neon-auth.mjs";
 
-export default async function handler(request) {
+export default async function handler(request, response) {
   try {
     const user = await currentUser(request);
-    return Response.json({ user: user ? { username: user.username } : null });
+    return send(response, 200, { user: user ? { username: user.username } : null });
   } catch (error) {
     console.error(error);
-    return Response.json({ error: "Sesi tidak dapat diperiksa." }, { status: 500 });
+    return send(response, 500, { error: "Sesi tidak dapat diperiksa." });
   }
 }

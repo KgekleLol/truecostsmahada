@@ -1,9 +1,7 @@
-import { clearSessionCookie, deleteSession } from "../../lib/neon-auth.mjs";
+import { clearSessionCookie, deleteSession, send } from "../../lib/neon-auth.mjs";
 
-export default async function handler(request) {
-  if (request.method !== "POST") return Response.json({ error: "Metode tidak diizinkan." }, { status: 405 });
+export default async function handler(request, response) {
+  if (request.method !== "POST") return send(response, 405, { error: "Metode tidak diizinkan." });
   await deleteSession(request);
-  return new Response(JSON.stringify({ ok: true }), {
-    headers: { "Content-Type": "application/json", "Set-Cookie": clearSessionCookie() },
-  });
+  return send(response, 200, { ok: true }, { "Set-Cookie": clearSessionCookie() });
 }
