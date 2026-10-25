@@ -10,10 +10,6 @@ mkdirSync(dist, { recursive: true });
 
 copyFileSync(join(root, "index.html"), join(dist, "index.html"));
 
-if (existsSync(join(root, "_redirects"))) {
-  copyFileSync(join(root, "_redirects"), join(dist, "_redirects"));
-}
-
 for (const asset of ["images", "model"]) {
   const source = join(root, asset);
   if (existsSync(source)) {
