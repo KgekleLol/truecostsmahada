@@ -10,7 +10,13 @@ mkdirSync(dist, { recursive: true });
 
 copyFileSync(join(root, "index.html"), join(dist, "index.html"));
 
-for (const asset of ["images", "model"]) {
+for (const asset of [
+  "images",
+  "model",
+  "truecost-ai-classifier.js",
+  "edge-impulse-standalone.js",
+  "edge-impulse-standalone.wasm",
+]) {
   const source = join(root, asset);
   if (existsSync(source)) {
     cpSync(source, join(dist, asset), { recursive: true });

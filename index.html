@@ -16,6 +16,9 @@
       rel="stylesheet"
     />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script>
       tailwind.config = {
         theme: {
@@ -1358,6 +1361,18 @@
       const SESSION_KEYS = [TRIAL_MODE_KEY, "truecost-trial-session-v1", "truecost-temporary-token"];
       const AGRIBALYSE = "https://agribalyse.ademe.fr/";
       const OPEN_FOOD_FACTS = "https://world.openfoodfacts.org/";
+      const FIREBASE_CONFIG = {
+        apiKey: "AIzaSyBNswxV5dP01qCOTBmXt5CB_ot7Q6Bh444",
+        authDomain: "truecost-f53c8.firebaseapp.com",
+        projectId: "truecost-f53c8",
+        storageBucket: "truecost-f53c8.firebasestorage.app",
+        messagingSenderId: "241015723025",
+        appId: "1:241015723025:web:00c8e78c54173cbc108db0",
+      };
+      const firebaseApp = firebase.initializeApp(FIREBASE_CONFIG);
+      const firebaseAuth = firebaseApp.auth();
+      const firebaseDb = firebaseApp.firestore();
+      const firebaseUsernameEmail = (username) => `${sanitizeUsername(username)}@truecost-f53c8.firebaseapp.com`;
 
       /* ------------------------------------------------------------
          2. KATEGORI JAJANAN (data terpusat)
@@ -1560,42 +1575,11 @@
 
       const detectedProduct = () => productsById[state.detectedKey] || categories[0];
 
-      /* ------------------------------------------------------------
-         5. KLIEN API AKUN (Netlify Functions)
-         Semua request jaringan dibungkus try-catch sehingga tidak
-         ada unhandled promise rejection.
-         ------------------------------------------------------------ */
-      async function apiRequest(path, options = {}) {
-        const config = {
-          method: options.method || "GET",
-          credentials: "same-origin",
-          ...options,
-        };
-        config.headers = {
-          "Content-Type": "application/json",
-          ...(options.headers || {}),
-        };
-        let response;
-        try {
-          response = await fetch(`${API_BASE}${path}`, config);
-        } catch {
-          throw new Error("Koneksi bermasalah. Periksa internet lalu coba lagi.");
-        }
-        let payload = {};
-        try {
-          payload = await response.json();
-        } catch {
-          payload = {};
-        }
-        if (!response.ok) {
-          throw new Error(payload.error || "Terjadi kesalahan. Silakan coba lagi.");
-        }
-        return payload;
-      }
-
       async function fetchCurrentUser() {
-        const data = await apiRequest("/auth/me");
-        return data.user || null;
+        const user = firebaseAuth.currentUser;
+        if (!user) return null;
+        const snapshot = await firebaseDb.collection("users").doc(user.uid).get();
+        return snapshot.exists ? snapshot.data() : null;
       }
 
       async function registerUser(rawUsername, password) {
@@ -1604,12 +1588,16 @@
           throw new Error("Username minimal 3 karakter alfanumerik atau garis bawah.");
         }
         if (String(password).length < 6) throw new Error("Password minimal 6 karakter.");
-        const data = await apiRequest("/auth/register", {
-          method: "POST",
-          body: JSON.stringify({ username: cleanUsername, password }),
+        const credential = await firebaseAuth.createUserWithEmailAndPassword(
+          firebaseUsernameEmail(cleanUsername),
+          password,
+        );
+        await firebaseDb.collection("users").doc(credential.user.uid).set({
+          username: cleanUsername,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
         localStorage.removeItem(TRIAL_MODE_KEY);
-        return data.user;
+        return { username: cleanUsername };
       }
 
       async function loginUser(rawUsername, password) {
@@ -1617,12 +1605,25 @@
         if (cleanUsername.length < 3 || String(password).length < 6) {
           throw new Error("Username atau password salah. Silakan coba lagi.");
         }
-        const data = await apiRequest("/auth/login", {
-          method: "POST",
-          body: JSON.stringify({ username: cleanUsername, password }),
-        });
+        const credential = await firebaseAuth.signInWithEmailAndPassword(
+          firebaseUsernameEmail(cleanUsername),
+          password,
+        );
+        const snapshot = await firebaseDb.collection("users").doc(credential.user.uid).get();
+        if (!snapshot.exists) throw new Error("Profil akun tidak ditemukan.");
         localStorage.removeItem(TRIAL_MODE_KEY);
-        return data.user;
+        return snapshot.data();
+      }
+
+      function accountErrorMessage(error) {
+        const messages = {
+          "auth/email-already-in-use": "Username sudah digunakan, silakan pilih yang lain.",
+          "auth/invalid-credential": "Username atau password salah. Silakan coba lagi.",
+          "auth/invalid-login-credentials": "Username atau password salah. Silakan coba lagi.",
+          "auth/weak-password": "Password minimal 6 karakter.",
+          "auth/network-request-failed": "Koneksi bermasalah. Periksa internet lalu coba lagi.",
+        };
+        return messages[error?.code] || (error instanceof Error ? error.message : "Terjadi kesalahan. Silakan coba lagi.");
       }
 
       /* ------------------------------------------------------------
@@ -1666,8 +1667,13 @@
       async function refreshAccountLogs() {
         if (state.mode !== "account") return;
         try {
-          const data = await apiRequest("/logs");
-          state.logs = (data.logs || [])
+          const snapshot = await firebaseDb
+            .collection("habitLogs")
+            .where("userId", "==", firebaseAuth.currentUser.uid)
+            .limit(400)
+            .get();
+          state.logs = snapshot.docs
+            .map((doc) => ({ id: doc.id, ...doc.data(), scannedAt: doc.data().scannedAt.toDate() }))
             .map(toLogEntry)
             .sort((first, second) => second.scannedAt - first.scannedAt);
           renderTracker();
@@ -1716,7 +1722,16 @@
           return;
         }
         try {
-          const user = await fetchCurrentUser();
+          const user = await new Promise((resolve, reject) => {
+            const unsubscribe = firebaseAuth.onAuthStateChanged(async (authUser) => {
+              unsubscribe();
+              try {
+                resolve(authUser ? await fetchCurrentUser() : null);
+              } catch (error) {
+                reject(error);
+              }
+            }, reject);
+          });
           if (user) startAccountSession(user);
           else resetToLoggedOut();
         } catch {
@@ -1727,7 +1742,7 @@
       async function logout() {
         stopCamera();
         try {
-          await apiRequest("/auth/logout", { method: "POST" });
+          await firebaseAuth.signOut();
         } catch (error) {
           console.error("Gagal keluar:", error);
         } finally {
@@ -1736,7 +1751,6 @@
           showPage("home");
           setRegisterMode(false);
           el("auth-form").reset();
-          openModal("auth");
           showToast("Kamu telah keluar dari akun.");
         }
       }
@@ -2145,8 +2159,7 @@
           showPage("tracker");
           showToast(registerMode ? "Akun berhasil dibuat." : "Berhasil masuk.");
         } catch (error) {
-          const message =
-            error instanceof Error ? error.message : "Terjadi kesalahan. Silakan coba lagi.";
+          const message = accountErrorMessage(error);
           showAuthError(message);
           showToast(message, "error");
         } finally {
@@ -2316,19 +2329,17 @@
 
         try {
           if (state.mode === "account" && state.user) {
-            await apiRequest("/logs", {
-              method: "POST",
-              body: JSON.stringify({
-                productKey: entry.productKey,
-                productName: entry.productName,
-                decision: entry.decision,
-                carbonGrams: entry.carbonGrams,
-                plasticGrams: entry.plasticGrams,
-                sugarGrams: entry.sugarGrams,
-                sodiumMg: entry.sodiumMg,
-                timezone: entry.timezone,
-                scannedAt: scannedAt.toISOString(),
-              }),
+            await firebaseDb.collection("habitLogs").add({
+              userId: firebaseAuth.currentUser.uid,
+              productKey: entry.productKey,
+              productName: entry.productName,
+              decision: entry.decision,
+              carbonGrams: entry.carbonGrams,
+              plasticGrams: entry.plasticGrams,
+              sugarGrams: entry.sugarGrams,
+              sodiumMg: entry.sodiumMg,
+              timezone: entry.timezone,
+              scannedAt,
             });
             state.logs = [entry, ...state.logs];
             renderTracker();

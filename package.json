@@ -5,6 +5,7 @@
   "type": "module",
   "description": "TrueCost SMAHADA - edukasi konsumsi etis dan habit tracker jajanan untuk pelajar",
   "scripts": {
+    "build": "node scripts/build.mjs",
     "dev": "netlify dev --port 8889",
     "db:generate": "drizzle-kit generate"
   },
