@@ -1572,6 +1572,9 @@
           payload = {};
         }
         if (!response.ok) {
+          if (response.status === 404 || response.status === 501) {
+            throw new Error("Server akun belum aktif di alamat ini. Buka versi Vercel setelah deploy.");
+          }
           throw new Error(payload.error || "Terjadi kesalahan. Silakan coba lagi.");
         }
         return payload;
