@@ -1351,9 +1351,8 @@
 
       /* ------------------------------------------------------------
          1. KONFIGURASI LAYANAN AKUN
-         Autentikasi dan penyimpanan data ditangani oleh Netlify
-         Functions + Netlify Database melalui endpoint /api/*.
-         Sesi dikirim oleh server lewat cookie HttpOnly.
+         Autentikasi dan penyimpanan data ditangani oleh Firebase
+         Authentication + Firestore.
          ------------------------------------------------------------ */
       const API_BASE = "/api";
       const TRIAL_MODE_KEY = "isTrialMode";
@@ -1373,6 +1372,7 @@
       const firebaseAuth = firebaseApp.auth();
       const firebaseDb = firebaseApp.firestore();
       const firebaseUsernameEmail = (username) => `${sanitizeUsername(username)}@truecost-f53c8.firebaseapp.com`;
+      const firebaseReady = firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
       /* ------------------------------------------------------------
          2. KATEGORI JAJANAN (data terpusat)
@@ -1576,13 +1576,14 @@
       const detectedProduct = () => productsById[state.detectedKey] || categories[0];
 
       async function fetchCurrentUser() {
+        await firebaseReady;
         const user = firebaseAuth.currentUser;
         if (!user) return null;
-        const snapshot = await firebaseDb.collection("users").doc(user.uid).get();
-        return snapshot.exists ? snapshot.data() : null;
+        return { username: user.displayName || user.email.split("@")[0] };
       }
 
       async function registerUser(rawUsername, password) {
+        await firebaseReady;
         const cleanUsername = sanitizeUsername(rawUsername);
         if (cleanUsername.length < 3) {
           throw new Error("Username minimal 3 karakter alfanumerik atau garis bawah.");
@@ -1592,15 +1593,18 @@
           firebaseUsernameEmail(cleanUsername),
           password,
         );
-        await firebaseDb.collection("users").doc(credential.user.uid).set({
-          username: cleanUsername,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        });
+        try {
+          await credential.user.updateProfile({ displayName: cleanUsername });
+        } catch (error) {
+          await credential.user.delete().catch(() => undefined);
+          throw error;
+        }
         localStorage.removeItem(TRIAL_MODE_KEY);
         return { username: cleanUsername };
       }
 
       async function loginUser(rawUsername, password) {
+        await firebaseReady;
         const cleanUsername = sanitizeUsername(rawUsername);
         if (cleanUsername.length < 3 || String(password).length < 6) {
           throw new Error("Username atau password salah. Silakan coba lagi.");
@@ -1609,19 +1613,23 @@
           firebaseUsernameEmail(cleanUsername),
           password,
         );
-        const snapshot = await firebaseDb.collection("users").doc(credential.user.uid).get();
-        if (!snapshot.exists) throw new Error("Profil akun tidak ditemukan.");
         localStorage.removeItem(TRIAL_MODE_KEY);
-        return snapshot.data();
+        return { username: credential.user.displayName || cleanUsername };
       }
 
       function accountErrorMessage(error) {
         const messages = {
           "auth/email-already-in-use": "Username sudah digunakan, silakan pilih yang lain.",
+          "auth/invalid-email": "Username tidak valid. Gunakan huruf, angka, atau garis bawah.",
           "auth/invalid-credential": "Username atau password salah. Silakan coba lagi.",
           "auth/invalid-login-credentials": "Username atau password salah. Silakan coba lagi.",
+          "auth/user-not-found": "Username atau password salah. Silakan coba lagi.",
+          "auth/wrong-password": "Username atau password salah. Silakan coba lagi.",
           "auth/weak-password": "Password minimal 6 karakter.",
           "auth/network-request-failed": "Koneksi bermasalah. Periksa internet lalu coba lagi.",
+          "auth/configuration-not-found": "Login Firebase belum diaktifkan. Aktifkan Email/Password di Firebase Console.",
+          "auth/operation-not-allowed": "Login Email/Password belum diaktifkan di Firebase Console.",
+          "permission-denied": "Akses akun ditolak. Pastikan Firestore Rules sudah dipasang.",
         };
         return messages[error?.code] || (error instanceof Error ? error.message : "Terjadi kesalahan. Silakan coba lagi.");
       }
@@ -1673,7 +1681,13 @@
             .limit(400)
             .get();
           state.logs = snapshot.docs
-            .map((doc) => ({ id: doc.id, ...doc.data(), scannedAt: doc.data().scannedAt.toDate() }))
+            .map((doc) => {
+              const data = doc.data();
+              const scannedAt = data.scannedAt?.toDate
+                ? data.scannedAt.toDate()
+                : new Date(data.scannedAt);
+              return { id: doc.id, ...data, scannedAt };
+            })
             .map(toLogEntry)
             .sort((first, second) => second.scannedAt - first.scannedAt);
           renderTracker();
@@ -1742,6 +1756,7 @@
       async function logout() {
         stopCamera();
         try {
+          await firebaseReady;
           await firebaseAuth.signOut();
         } catch (error) {
           console.error("Gagal keluar:", error);
