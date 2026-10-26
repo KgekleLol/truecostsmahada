@@ -17,6 +17,8 @@ if (existsSync(join(root, "register.html"))) {
 for (const asset of [
   "images",
   "model",
+  "data",
+  "indonesian_packaged_products_db.csv",
   "truecost-ai-classifier.js",
   "edge-impulse-standalone.js",
   "edge-impulse-standalone.wasm",

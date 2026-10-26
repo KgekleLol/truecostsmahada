@@ -1,0 +1,101 @@
+id,brand,product,category,pack_format,net_size,unit,plastic_type,plastic_g,other_material,other_g,sugar_g_per_100,sodium_mg_per_100,sugar_g_per_pack,sodium_mg_per_pack,pack_co2e_g,total_pack_mass_g,data_confidence
+ID001,Sosro,Teh Botol Sosro Original 350 ml,Tea drink,PET bottle,350,ml,PET,22,None,0,8.0,10,28.0,35.0,55.0,22,low
+ID002,Mayora,Teh Pucuk Harum 350 ml,Tea drink,PET bottle,350,ml,PET,21,None,0,7.4,9,25.9,31.5,52.5,21,low
+ID003,Sosro,Fruit Tea Apel 350 ml,Tea drink,PET bottle,350,ml,PET,22,None,0,8.0,15,28.0,52.5,55.0,22,low
+ID004,Sosro,Teh Kotak Original 200 ml,Tea drink,Carton,200,ml,LDPE,3.0,Paperboard,7.0,7.5,10,15.0,20.0,14.0,10.0,low
+ID005,Orang Tua,Teh Gelas 170 ml,Tea drink,PP cup,170,ml,PP,4.5,Multilayer film,0.5,8.0,20,13.6,34.0,10.0,5.0,low
+ID006,Kino,Nu Green Tea Original 450 ml,Tea drink,PET bottle,450,ml,PET,20,None,0,6.2,5,27.9,22.5,50.0,20,low
+ID007,Ultrajaya,Ultra Milk Full Cream 250 ml,Dairy drink,Carton,250,ml,LDPE,3.0,Paperboard,8.0,4.6,50,11.5,125.0,15.1,11.0,medium
+ID008,Ultrajaya,Ultra Milk Cokelat 250 ml,Dairy drink,Carton,250,ml,LDPE,3.0,Paperboard,8.0,9.6,60,24.0,150.0,15.1,11.0,medium
+ID009,Cimory,Yogurt Drink Original 250 ml,Dairy drink,PP squeeze bottle,250,ml,PP,12,None,0,10.0,50,25.0,125.0,22.8,12,low
+ID010,Indomilk,Susu Kental Manis Putih 370 g (can),Dairy,Steel can,370,g,None,0,Steel,45,55.0,110,203.5,407.0,112.5,45,low
+ID011,Yakult,Yakult 65 ml,Dairy drink,PS bottle,65,ml,PS,4.0,Multilayer film,0.3,16.0,25,10.4,16.2,14.5,4.3,low
+ID012,Danone,Aqua 600 ml,Water,PET bottle,600,ml,PET,12.5,None,0,0.0,1,0.0,6.0,31.2,12.5,medium
+ID013,Mayora,Le Minerale 600 ml,Water,PET bottle,600,ml,PET,11.5,None,0,0.0,2,0.0,12.0,28.8,11.5,low
+ID014,Club (Danone),Club 600 ml,Water,PET bottle,600,ml,PET,12.0,None,0,0.0,2,0.0,12.0,30.0,12.0,low
+ID015,Ades (Coca-Cola),Ades 600 ml,Water,PET bottle,600,ml,PET,12.0,None,0,0.0,1,0.0,6.0,30.0,12.0,low
+ID016,Otsuka,Pocari Sweat 500 ml,Isotonic,PET bottle,500,ml,PET,19,None,0,6.2,49,31.0,245.0,47.5,19,medium
+ID017,Mizone,Mizone Lychee Lemon 500 ml,Isotonic,PET bottle,500,ml,PET,19,None,0,5.0,25,25.0,125.0,47.5,19,low
+ID018,Coca-Cola,Coca-Cola 390 ml PET,Soft drink,PET bottle,390,ml,PET,21,None,0,10.6,4,41.34,15.6,52.5,21,medium
+ID019,Coca-Cola,Coca-Cola 330 ml can,Soft drink,Aluminium can,330,ml,None,0,Aluminium,13,10.6,4,34.98,13.2,104.0,13,medium
+ID020,Coca-Cola,Sprite 390 ml PET,Soft drink,PET bottle,390,ml,PET,21,None,0,9.8,10,38.22,39.0,52.5,21,low
+ID021,Coca-Cola,Fanta Strawberry 390 ml PET,Soft drink,PET bottle,390,ml,PET,21,None,0,11.0,15,42.9,58.5,52.5,21,low
+ID022,Fruit Tea / Coca-Cola,Floridina Orange 350 ml,Juice drink,PET bottle,350,ml,PET,20,None,0,11.0,25,38.5,87.5,50.0,20,low
+ID023,Buavita,Buavita Jeruk 245 ml,Juice drink,Carton,245,ml,LDPE,2.5,Paperboard,8.0,10.0,10,24.5,24.5,14.1,10.5,low
+ID024,Frisian Flag,You C1000 Orange 140 ml,Vitamin drink,PET bottle,140,ml,PET,9.0,None,0,9.5,30,13.3,42.0,22.5,9.0,low
+ID025,Kratingdaeng,Kratingdaeng 150 ml,Energy drink,Aluminium can,150,ml,None,0,Aluminium,9,12.0,60,18.0,90.0,72.0,9,low
+ID026,Kopiko,Kopiko 78C Coffee Latte 240 ml,Coffee drink,PET bottle,240,ml,PET,15,None,0,8.3,40,19.92,96.0,37.5,15,low
+ID027,Good Day,Good Day Cappuccino 250 ml,Coffee drink,PET bottle,250,ml,PET,15,None,0,9.0,45,22.5,112.5,37.5,15,low
+ID028,Kapal Api,Special Mix 25 g sachet,Instant coffee,Sachet,25,g,Multilayer film,1.2,None,0,52.0,100,13.0,25.0,3.6,1.2,low
+ID029,Indocafe,Coffeemix 20 g sachet,Instant coffee,Sachet,20,g,Multilayer film,1.0,None,0,50.0,90,10.0,18.0,3.0,1.0,low
+ID030,Nestle,Milo 3in1 33 g sachet,Instant chocolate malt,Sachet,33,g,Multilayer film,1.5,None,0,42.0,120,13.86,39.6,4.5,1.5,low
+ID031,Indofood,Indomie Mi Goreng Original 85 g,Instant noodles,Flow-wrap + sachets,85,g,Multilayer film,4.5,None,0,4.0,1000,3.4,850.0,13.5,4.5,medium
+ID032,Indofood,Indomie Ayam Bawang 69 g,Instant noodles,Flow-wrap + sachets,69,g,Multilayer film,4.0,None,0,2.0,1250,1.38,862.5,12.0,4.0,low
+ID033,Wings,Mie Sedaap Goreng 91 g,Instant noodles,Flow-wrap + sachets,91,g,Multilayer film,4.5,None,0,4.0,1000,3.64,910.0,13.5,4.5,low
+ID034,Wings,Mie Sedaap Soto 75 g,Instant noodles,Flow-wrap + sachets,75,g,Multilayer film,4.0,None,0,3.0,1300,2.25,975.0,12.0,4.0,low
+ID035,Indofood,Pop Mie Ayam 75 g cup,Instant noodles,PS cup + lid,75,g,PS,7.0,Multilayer film,1.0,3.0,1700,2.25,1275.0,26.8,8.0,low
+ID036,Indofood,Chitato Sapi Panggang 68 g,Snack,Chips bag,68,g,Multilayer film,3.0,None,0,2.5,600,1.7,408.0,9.0,3.0,low
+ID037,Qtela,Qtela Singkong Original 60 g,Snack,Chips bag,60,g,Multilayer film,2.8,None,0,1.5,700,0.9,420.0,8.4,2.8,low
+ID038,Tao Kae Noi / Orang Tua,Taro Net Seaweed 36 g,Snack,Chips bag,36,g,Multilayer film,2.0,None,0,3.0,800,1.08,288.0,6.0,2.0,low
+ID039,Indofood,Potabee BBQ 68 g,Snack,Chips bag,68,g,Multilayer film,3.0,None,0,3.0,600,2.04,408.0,9.0,3.0,low
+ID040,Indofood,Chiki Twist Ayam Bakar 60 g,Snack,Snack bag,60,g,Multilayer film,2.5,None,0,4.0,800,2.4,480.0,7.5,2.5,low
+ID041,Mondelez,Oreo Vanilla 133 g,Biscuit,Multi-pack film,133,g,Multilayer film,5.5,None,0,38.0,450,50.54,598.5,16.5,5.5,low
+ID042,Mayora,Roma Kelapa 189 g,Biscuit,Multi-pack film,189,g,Multilayer film,6.5,None,0,22.0,400,41.58,756.0,19.5,6.5,low
+ID043,Indofood/Mondelez,Biskuat Cokelat 120 g,Biscuit,Multi-pack film,120,g,Multilayer film,4.5,None,0,20.0,350,24.0,420.0,13.5,4.5,low
+ID044,Tango (Orang Tua),Tango Wafer Cokelat 176 g,Wafer,Multi-pack film,176,g,Multilayer film,6.0,None,0,33.0,150,58.08,264.0,18.0,6.0,low
+ID045,Mayora,Beng-Beng 32 g,Chocolate wafer,Flow-wrap,32,g,Multilayer film,1.8,None,0,40.0,90,12.8,28.8,5.4,1.8,low
+ID046,Petra,SilverQueen Cashew 62 g,Chocolate,Foil + paper wrap,62,g,Multilayer film,2.0,Aluminium,1.0,50.0,60,31.0,37.2,14.0,3.0,low
+ID047,ABC,Kecap Manis 135 ml,Sauce,PET bottle,135,ml,PET,12,None,0,45.0,1700,60.75,2295.0,30.0,12,low
+ID048,ABC,Sambal Asli 335 ml,Sauce,PET bottle,335,ml,PET,22,None,0,12.0,1500,40.2,5025.0,55.0,22,low
+ID049,Ajinomoto,Masako Rasa Ayam 11 g,Seasoning,Sachet,11,g,Multilayer film,0.8,None,0,2.0,17000,0.22,1870.0,2.4,0.8,low
+ID050,Sari Roti,Roti Tawar Kupas 400 g,Bread,LDPE bag,400,g,LDPE,7.0,None,0,5.0,450,20.0,1800.0,14.7,7.0,low
+ID051,Indofood,Chiki Balls Keju 55 g,Snack,Snack bag,55,g,Multilayer film,2.5,None,0,3.0,700,1.65,385.0,7.5,2.5,low
+ID052,Jetz,Jetz Stick Cokelat 50 g,Snack,Snack bag,50,g,Multilayer film,2.2,None,0,25.0,150,12.5,75.0,6.6,2.2,low
+ID053,Indofood Frito-Lay,Lay's Rumput Laut 68 g,Snack,Chips bag,68,g,Multilayer film,3.0,None,0,2.0,600,1.36,408.0,9.0,3.0,low
+ID054,Indofood Frito-Lay,Lay's Classic Salted 68 g,Snack,Chips bag,68,g,Multilayer film,3.0,None,0,1.0,450,0.68,306.0,9.0,3.0,low
+ID055,Indofood Frito-Lay,Cheetos Jagung Bakar 50 g,Snack,Snack bag,50,g,Multilayer film,2.3,None,0,3.0,650,1.5,325.0,6.9,2.3,low
+ID056,Indofood Frito-Lay,Doritos Nacho Cheese 65 g,Snack,Chips bag,65,g,Multilayer film,3.0,None,0,3.0,700,1.95,455.0,9.0,3.0,low
+ID057,Indofood,Chitato Lite Original 68 g,Snack,Chips bag,68,g,Multilayer film,3.0,None,0,1.0,400,0.68,272.0,9.0,3.0,low
+ID058,Kusuka,Keripik Singkong Balado 60 g,Snack,Chips bag,60,g,Multilayer film,2.5,None,0,8.0,500,4.8,300.0,7.5,2.5,low
+ID059,Qtela,Qtela Tempe Original 55 g,Snack,Chips bag,55,g,Multilayer film,2.5,None,0,1.0,600,0.55,330.0,7.5,2.5,low
+ID060,Garuda Food,Pilus Original 95 g,Snack,Snack bag,95,g,Multilayer film,3.2,None,0,3.0,700,2.85,665.0,9.6,3.2,low
+ID061,Garuda Food,Kacang Atom 70 g,Snack,Snack bag,70,g,Multilayer film,2.8,None,0,6.0,450,4.2,315.0,8.4,2.8,low
+ID062,Dua Kelinci,Kacang Garing 100 g,Snack,Snack bag,100,g,Multilayer film,3.2,None,0,3.0,300,3.0,300.0,9.6,3.2,low
+ID063,Dua Kelinci,Kacang Bawang 80 g,Snack,Snack bag,80,g,Multilayer film,3.0,None,0,4.0,500,3.2,400.0,9.0,3.0,low
+ID064,Gemez,Gemez Mie Snack Ayam 18 g,Snack,Snack bag,18,g,Multilayer film,1.5,None,0,8.0,1300,1.44,234.0,4.5,1.5,low
+ID065,Mamee,Monster Noodle Snack 25 g,Snack,Snack bag,25,g,Multilayer film,1.6,None,0,6.0,1500,1.5,375.0,4.8,1.6,low
+ID066,Calbee,Jagabee Original 38 g,Snack,Snack bag,38,g,Multilayer film,2.0,None,0,2.0,500,0.76,190.0,6.0,2.0,low
+ID067,Oishi,Prawn Crackers Spicy 60 g,Snack,Snack bag,60,g,Multilayer film,2.5,None,0,2.0,900,1.2,540.0,7.5,2.5,low
+ID068,Nabati,Richoco Wafer 52 g,Wafer,Flow-wrap,52,g,Multilayer film,2.5,None,0,35.0,110,18.2,57.2,7.5,2.5,low
+ID069,Nabati,Richeese Wafer 50 g,Wafer,Flow-wrap,50,g,Multilayer film,2.5,None,0,22.0,250,11.0,125.0,7.5,2.5,low
+ID070,Gery,Saluut Malkist Cokelat 110 g,Biscuit,Multi-pack film,110,g,Multilayer film,4.0,None,0,22.0,250,24.2,275.0,12.0,4.0,low
+ID071,Mayora,Roma Malkist Abon 135 g,Biscuit,Multi-pack film,135,g,Multilayer film,3.5,None,0,6.0,750,8.1,1012.5,10.5,3.5,low
+ID072,Mayora,Roma Marie Susu 120 g,Biscuit,Multi-pack film,120,g,Multilayer film,3.5,None,0,22.0,280,26.4,336.0,10.5,3.5,low
+ID073,Regal,Marie Regal 125 g,Biscuit,Multi-pack film,125,g,Multilayer film,3.5,None,0,24.0,280,30.0,350.0,10.5,3.5,low
+ID074,Hello Panda,Hello Panda Cokelat 45 g,Biscuit,Pack film,45,g,Multilayer film,2.2,None,0,28.0,120,12.6,54.0,6.6,2.2,low
+ID075,Good Time,Good Time Choco Chips 71 g,Biscuit,Pack film,71,g,Multilayer film,3.0,None,0,32.0,200,22.72,142.0,9.0,3.0,low
+ID076,Glico,Pocky Chocolate 22 g,Biscuit,Film + paper box,22,g,Multilayer film,1.2,Paperboard,3.0,30.0,100,6.6,22.0,6.9,4.2,low
+ID077,Mayora,Roma Slai O'lai Strawberry 108 g,Biscuit,Multi-pack film,108,g,Multilayer film,4.5,None,0,24.0,150,25.92,162.0,13.5,4.5,low
+ID078,Mayora,Roma Sari Gandum Cokelat 118 g,Biscuit,Multi-pack film,118,g,Multilayer film,4.2,None,0,23.0,300,27.14,354.0,12.6,4.2,low
+ID079,Mayora,Chocolatos Wafer Cokelat 16 g,Wafer,Flow-wrap,16,g,Multilayer film,1.4,None,0,38.0,90,6.08,14.4,4.2,1.4,low
+ID080,Better,Better Cokelat 44 g,Biscuit,Pack film,44,g,Multilayer film,2.0,None,0,28.0,250,12.32,110.0,6.0,2.0,low
+ID081,Superstar,Superstar Triple Chocolate 90 g,Biscuit,Pack film,90,g,Multilayer film,3.0,None,0,30.0,120,27.0,108.0,9.0,3.0,low
+ID082,Mondelez,Ritz Crackers Original 100 g,Biscuit,Multi-pack film,100,g,Multilayer film,3.0,None,0,8.0,700,8.0,700.0,9.0,3.0,low
+ID083,Lotte,Choco Pie 28 g,Biscuit,Flow-wrap,28,g,Multilayer film,1.5,None,0,33.0,100,9.24,28.0,4.5,1.5,low
+ID084,Indofood/Mondelez,Biskuat Bolu Cokelat 24 g,Biscuit,Flow-wrap,24,g,Multilayer film,1.4,None,0,28.0,170,6.72,40.8,4.2,1.4,low
+ID085,Mayora,Kopiko Coffee Candy 120 g,Confectionery,Candy bag,120,g,Multilayer film,4.0,None,0,75.0,20,90.0,24.0,12.0,4.0,low
+ID086,Yupi,Gummy Strawberry Kiss 45 g,Confectionery,Candy bag,45,g,Multilayer film,2.0,None,0,50.0,20,22.5,9.0,6.0,2.0,low
+ID087,Perfetti,Mentos Roll Fruit 37 g,Confectionery,Roll wrap,37,g,Multilayer film,1.2,None,0,70.0,10,25.9,3.7,3.6,1.2,low
+ID088,Perfetti,Fruit-tella Strawberry 35 g,Confectionery,Roll wrap,35,g,Multilayer film,1.5,None,0,55.0,30,19.25,10.5,4.5,1.5,low
+ID089,Perfetti,Chupa Chups 12 g,Confectionery,Wrapped lollipop,12,g,Multilayer film,0.8,None,0,85.0,5,10.2,0.6,2.4,0.8,low
+ID090,Mayora,Kis Strawberry Candy 125 g,Confectionery,Candy bag,125,g,Multilayer film,3.0,None,0,75.0,15,93.75,18.8,9.0,3.0,low
+ID091,Mondelez,Cadbury Dairy Milk 62 g,Chocolate,Foil + film wrap,62,g,Multilayer film,2.0,Aluminium,1.0,57.0,80,35.34,49.6,14.0,3.0,low
+ID092,Petra,SilverQueen Chunky Bar Cokelat 30 g,Chocolate,Flow-wrap,30,g,Multilayer film,1.5,None,0,45.0,50,13.5,15.0,4.5,1.5,low
+ID093,Mayora,Choki Choki Cokelat 9 g,Chocolate,Tube,9,g,PP,3.0,None,0,45.0,60,4.05,5.4,5.7,3.0,low
+ID094,Ferrero,Kinder Joy 20 g,Chocolate,Egg capsule + film,20,g,PP,10.0,Multilayer film,1.5,46.0,100,9.2,20.0,23.5,11.5,low
+ID095,Nutrijell,Nutrijell Jelly Cup 125 g,Jelly,PP cup + film lid,125,g,PP,3.5,Multilayer film,0.3,13.0,30,16.25,37.5,7.5,3.8,low
+ID096,Okky,Okky Jelly Drink 150 ml,Jelly,Spout pouch,150,ml,Multilayer film,3.0,None,0,9.0,30,13.5,45.0,9.0,3.0,low
+ID097,Aoka,Roti Aoka Cokelat 55 g,Bread,Film bag,55,g,LDPE,2.5,None,0,25.0,250,13.75,137.5,5.2,2.5,low
+ID098,Aoka,Roti Aoka Keju 55 g,Bread,Film bag,55,g,LDPE,2.5,None,0,12.0,300,6.6,165.0,5.2,2.5,low
+ID099,Sari Roti,Sandwich Cokelat 60 g,Bread,Film bag,60,g,LDPE,3.0,None,0,28.0,300,16.8,180.0,6.3,3.0,low
+ID100,Sari Roti,Roti Sobek Cokelat 200 g,Bread,Film bag,200,g,LDPE,5.5,None,0,15.0,380,30.0,760.0,11.6,5.5,low

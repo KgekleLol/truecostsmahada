@@ -1459,6 +1459,7 @@
           points: ["Bahan makanan dapat berasal dari pertanian, peternakan, atau sumber lain.", "Lahan, air, benih, dan energi dibutuhkan sejak tahap paling awal.", "Petani dan produsen bahan pangan berperan menjaga mutu serta ketersediaan bahan."],
           activityTitle: "Food Origin Detective",
           activityPrompt: "Keripik kentang renyah berasal dari bahan utama yang mana?",
+          correctIndex: 0,
           options: [
             { label: "Kentang", feedback: "Tepat. Kentang ditanam, dipanen, dibersihkan, lalu dikirim untuk diolah. Air, lahan, benih, dan tenaga petani sudah terlibat sebelum proses produksi dimulai." },
             { label: "Tepung terigu", feedback: "Tepung terigu bisa ada pada beberapa makanan, tetapi bahan utama keripik kentang adalah kentang yang ditanam dan dipanen oleh petani." },
@@ -1475,6 +1476,7 @@
           points: ["Pengolahan mengubah bahan mentah menjadi makanan yang aman dan siap dinikmati.", "Daftar komposisi ditulis dari bahan dengan jumlah terbanyak.", "Nilai gizi perlu dibaca bersama ukuran dan jumlah sajian per kemasan."],
           activityTitle: "Food Label Detective",
           activityPrompt: "Contoh label: 2 sajian per kemasan, natrium 180 mg per sajian. Jika kamu makan seluruh kemasan, berapa natrium yang dikonsumsi?",
+          correctIndex: 1,
           options: [
             { label: "180 mg", feedback: "Angka 180 mg berlaku untuk satu sajian. Karena satu kemasan berisi dua sajian, jumlahnya perlu dikalikan dua." },
             { label: "360 mg", feedback: "Benar. Dua sajian × 180 mg berarti 360 mg natrium untuk seluruh kemasan. Data ini hanya contoh ilustratif." },
@@ -1491,6 +1493,7 @@
           points: ["Makanan bergerak dari produsen menuju gudang, toko, warung, atau kantin.", "Kemasan dan penyimpanan membantu menjaga makanan tetap aman selama perjalanan.", "Diskon dan bundling dirancang agar penawaran terasa lebih menarik."],
           activityTitle: "Promo Trap",
           activityPrompt: "Kamu hanya membutuhkan satu camilan. Pilih satu seharga Rp5.000 atau tiga seharga Rp12.000?",
+          correctIndex: 0,
           options: [
             { label: "Beli satu seharga Rp5.000", feedback: "Pilihan ini sesuai kebutuhan saat ini. Total belanja lebih kecil dan tidak ada dua bungkus tambahan yang harus dihabiskan." },
             { label: "Beli tiga seharga Rp12.000", feedback: "Harga per bungkus lebih murah, tetapi cek apakah dua sisanya benar-benar akan dikonsumsi. Promo bermanfaat jika jumlahnya sesuai kebutuhan." },
@@ -1506,6 +1509,7 @@
           points: ["Lapar fisik biasanya muncul bertahap; keinginan visual dapat muncul tiba-tiba.", "Kemasan, tren, diskon, dan pilihan teman dapat menjadi pemicu.", "Jeda singkat memberi ruang untuk mengecek rasa lapar, kebutuhan, dan anggaran."],
           activityTitle: "Lapar Mata Detector",
           activityPrompt: "Kamu baru selesai makan siang. Kemasan camilan baru terlihat sangat menarik. Apa yang kamu lakukan?",
+          correctIndex: 1,
           options: [
             { label: "Langsung beli sebelum kehabisan", feedback: "Respons spontan itu wajar. Coba beri jeda satu menit untuk mengecek apakah kamu lapar, penasaran, atau hanya tertarik kemasannya." },
             { label: "Jeda sebentar dan cek rasa lapar", feedback: "Pilihan sadar memberi ruang untuk membedakan rasa lapar dengan ketertarikan visual. Kamu tetap boleh membeli jika setelah mengecek memang menginginkannya." },
@@ -1523,6 +1527,7 @@
           points: ["Food waste menyia-nyiakan makanan sekaligus sumber daya yang dipakai untuk membuatnya.", "Merencanakan porsi membantu mengurangi makanan yang tidak termakan.", "Sisa organik dan kemasan sebaiknya dipisahkan sesuai fasilitas yang tersedia."],
           activityTitle: "The Last Bite",
           activityPrompt: "Setelah istirahat, rotimu masih tersisa setengah dan belum lama berada di luar wadah. Apa yang kamu lakukan?",
+          correctIndex: 0,
           options: [
             { label: "Simpan tertutup untuk dimakan segera", feedback: "Ini dapat menjadi pilihan jika makanan masih layak, tangan dan wadah bersih, serta penyimpanannya aman." },
             { label: "Berikan ke teman tanpa bertanya", feedback: "Berbagi bisa mengurangi sisa, tetapi tanyakan dulu dan perhatikan kebersihan serta alergi teman." },
@@ -2023,41 +2028,221 @@
       }
 
       /* ------------------------------------------------------------
-         10. PENGISIAN UI STATIS
+         10. DATABASE PRODUK KEMASAN & PENGISIAN UI STATIS
          ------------------------------------------------------------ */
+      let manualProducts = [];
+      let manualSearchQuery = "";
+
+      function parseCsvRow(row) {
+        const cells = [];
+        let current = "";
+        let quoted = false;
+        for (let i = 0; i < row.length; i += 1) {
+          const char = row[i];
+          if (char === '"') {
+            if (quoted && row[i + 1] === '"') {
+              current += '"';
+              i += 1;
+            } else {
+              quoted = !quoted;
+            }
+          } else if (char === "," && !quoted) {
+            cells.push(current);
+            current = "";
+          } else {
+            current += char;
+          }
+        }
+        cells.push(current);
+        return cells;
+      }
+
+      function parseProductDatabase(csv) {
+        return csv
+          .trim()
+          .split(/\r?\n/)
+          .slice(1)
+          .map(parseCsvRow)
+          .filter((row) => row.length >= 18)
+          .map((row) => ({
+            id: row[0].toLowerCase().trim(),
+            brand: row[1]?.trim() || "",
+            name: row[2]?.trim() || "",
+            label: `${row[1]?.trim() ? row[1].trim() + " · " : ""}${row[2]?.trim() || ""}`,
+            group: row[3]?.trim() || "Produk Kemasan",
+            packFormat: `${row[4] || ""} · ${row[5] || ""} ${row[6] || ""}`,
+            plastic: Number(row[8]) || 0,
+            sugar: Number(row[13]) || 0,
+            sodium: Number(row[14]) || 0,
+            carbon: Number(row[15]) || 0,
+            carbonRange: `±${Number(row[15]) || 0} gCO₂e`,
+            confidence: row[17]?.trim() || "standard",
+            nutritionNote: `Gula ${Number(row[13]) || 0} g · natrium ${Number(row[14]) || 0} mg`,
+            source: "Database Kemasan Indonesia",
+            sourceUrl: OPEN_FOOD_FACTS,
+          }))
+          .filter((p) => [p.carbon, p.plastic, p.sugar, p.sodium].every(Number.isFinite));
+      }
+
+      async function loadManualProductDatabase() {
+        try {
+          let res = await fetch("./data/indonesian_packaged_products_db.csv");
+          if (!res.ok) {
+            res = await fetch("./indonesian_packaged_products_db.csv");
+          }
+          if (!res.ok) throw new Error("Database unavailable");
+          const text = await res.text();
+          const parsed = parseProductDatabase(text);
+          if (parsed.length > 0) {
+            parsed.forEach((product) => {
+              productsById[product.id] = product;
+            });
+            manualProducts = parsed;
+            renderManualCategories();
+          }
+        } catch (error) {
+          console.warn("Info: loadManualProductDatabase fallback:", error);
+        }
+      }
+
       function renderManualCategories() {
         const container = el("input-manual");
+        if (!container) return;
+
+        const allItems = manualProducts.length > 0 ? manualProducts : categories;
+        const query = manualSearchQuery.toLowerCase().trim();
+        const filteredItems = query
+          ? allItems.filter(
+              (p) =>
+                p.label.toLowerCase().includes(query) ||
+                (p.brand && p.brand.toLowerCase().includes(query)) ||
+                (p.group && p.group.toLowerCase().includes(query))
+            )
+          : allItems;
+
+        const groups = [...new Set(filteredItems.map((p) => p.group))];
+        const selectedId = filteredItems.length > 0 ? filteredItems[0].id : "";
+
         container.innerHTML = `
-          <label class="text-[9px] font-extrabold tracking-wide text-slate-500" for="manual-product-select">Pilih kategori jajanan</label>
+          <div class="flex items-center justify-between">
+            <label class="text-[9px] font-extrabold tracking-wide text-slate-500" for="manual-product-search">Cari Jajanan / Produk</label>
+            <span id="manual-data-status" class="text-[8px] font-bold text-emerald-600">
+              ${manualProducts.length > 0 ? `${manualProducts.length} produk kemasan Indonesia` : "13 kategori jajanan"}
+            </span>
+          </div>
+          <div>
+            <input
+              id="manual-product-search"
+              type="text"
+              value="${escapeHtml(manualSearchQuery)}"
+              placeholder="Ketik nama produk / merek (misal: Teh Botol, Taro, Oreo)..."
+              class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-[10px] font-bold text-slate-800 placeholder-slate-400 focus:border-emerald-500 focus:bg-white focus:outline-none transition"
+            />
+          </div>
+          <label class="text-[9px] font-extrabold tracking-wide text-slate-500" for="manual-product-select">
+            Pilih dari daftar (${filteredItems.length} hasil)
+          </label>
           <select id="manual-product-select" class="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-[10px] font-bold text-slate-700">
-            ${categoryGroups.map((group) => `<optgroup label="${escapeHtml(group)}">${categories
-              .filter((product) => product.group === group)
-              .map((product) => `<option value="${product.id}">${escapeHtml(product.label)} · ${escapeHtml(product.carbonRange)}</option>`)
-              .join("")}</optgroup>`).join("")}
+            ${
+              filteredItems.length > 0
+                ? groups
+                    .map(
+                      (group) => `<optgroup label="${escapeHtml(group)}">${filteredItems
+                        .filter((p) => p.group === group)
+                        .map(
+                          (p) =>
+                            `<option value="${p.id}">${escapeHtml(p.label)} · ${escapeHtml(p.carbonRange)}</option>`
+                        )
+                        .join("")}</optgroup>`
+                    )
+                    .join("")
+                : '<option value="">Produk tidak ditemukan</option>'
+            }
           </select>
-          <p id="manual-product-note" class="text-[9px] leading-5 text-slate-500"></p>
-          <button id="btn-select-manual-product" class="h-12 rounded-2xl bg-emerald-600 text-[10px] font-extrabold text-white" type="button">Gunakan kategori ini</button>`;
+          <div id="manual-product-card" class="rounded-2xl border border-slate-200 bg-slate-50 p-3.5 text-[9px] leading-5 text-slate-600">
+            <div class="flex items-center justify-between">
+              <span id="manual-product-title" class="font-extrabold text-slate-800 text-[10px]"></span>
+              <span id="manual-product-carbon" class="rounded-full bg-emerald-100 px-2 py-0.5 text-[8px] font-extrabold text-emerald-800"></span>
+            </div>
+            <p id="manual-product-note" class="mt-1.5 text-slate-600"></p>
+            <p id="manual-product-pack" class="mt-1 text-[8px] text-slate-400 font-semibold"></p>
+          </div>
+          <button id="btn-select-manual-product" class="h-12 rounded-2xl bg-emerald-600 text-[10px] font-extrabold text-white transition hover:bg-emerald-700 disabled:opacity-50" type="button" ${filteredItems.length === 0 ? "disabled" : ""}>
+            Gunakan produk ini
+          </button>`;
+
         const select = el("manual-product-select");
-        const updateNote = () => {
+        const searchInput = el("manual-product-search");
+        const updateCard = () => {
+          if (!select.value || !productsById[select.value]) {
+            el("manual-product-title").textContent = "Tidak ada produk";
+            el("manual-product-carbon").textContent = "-";
+            el("manual-product-note").textContent = "Ketik kata kunci lain di kolom pencarian.";
+            el("manual-product-pack").textContent = "";
+            return;
+          }
           const product = productsById[select.value];
-          el("manual-product-note").textContent = `${product.carbonRange} · ${product.nutritionNote}`;
+          el("manual-product-title").textContent = product.label;
+          el("manual-product-carbon").textContent = product.carbonRange || `±${product.carbon} gCO₂e`;
+          el("manual-product-note").textContent = `${product.nutritionNote || `Gula ${product.sugar} g · natrium ${product.sodium} mg`}`;
+          el("manual-product-pack").textContent = `${product.packFormat ? `${product.packFormat} · Plastik ${product.plastic} g · ` : ""}${product.group} · ${dataQualityLabel(product.confidence)}`;
         };
-        select.addEventListener("change", updateNote);
-        el("btn-select-manual-product").addEventListener("click", () => selectManual(select.value));
-        updateNote();
+
+        select.addEventListener("change", updateCard);
+        el("btn-select-manual-product").addEventListener("click", () => {
+          if (select.value) selectManual(select.value);
+        });
+
+        if (searchInput) {
+          searchInput.addEventListener("input", (e) => {
+            manualSearchQuery = e.target.value;
+            renderManualCategories();
+            const reSearch = el("manual-product-search");
+            if (reSearch) {
+              reSearch.focus();
+              reSearch.setSelectionRange(reSearch.value.length, reSearch.value.length);
+            }
+          });
+        }
+
+        updateCard();
+      }
+
+      /* State Kuis Interaktif Edukasi */
+      const quizStageState = {
+        0: { selected: null, checked: false },
+        1: { selected: null, checked: false },
+        2: { selected: null, checked: false },
+        3: { selected: null, checked: false },
+        4: { selected: null, checked: false },
+      };
+
+      function getEducationQuizScore() {
+        return Object.entries(quizStageState).filter(([idx, s]) => {
+          return s.checked && s.selected === educationStages[Number(idx)].correctIndex;
+        }).length;
       }
 
       function renderEducation() {
         el("education-stages").innerHTML = educationStages
-          .map(
-            (stage, index) => `<button type="button" data-education-stage="${index}" class="group flex min-h-64 flex-col rounded-2xl border p-5 text-left transition duration-300 hover:-translate-y-1 hover:shadow-xl ${
+          .map((stage, index) => {
+            const st = quizStageState[index];
+            const isCompleted = st && st.checked && st.selected === stage.correctIndex;
+            return `<button type="button" data-education-stage="${index}" class="group flex min-h-64 flex-col rounded-2xl border p-5 text-left transition duration-300 hover:-translate-y-1 hover:shadow-xl ${
               stage.focus
                 ? "border-emerald-400 bg-emerald-950 text-white shadow-lg shadow-emerald-950/10"
                 : "border-slate-200 bg-white text-slate-950 hover:border-emerald-300"
             }">
               <span class="flex w-full items-start justify-between">
                 <span class="text-[8px] font-extrabold tracking-widest ${stage.focus ? "text-emerald-300" : "text-emerald-600"}">${stage.number}</span>
-                <span class="grid size-9 place-items-center rounded-full ${stage.focus ? "bg-emerald-800 text-emerald-100" : "bg-slate-100 text-slate-500"} text-base transition group-hover:rotate-90">+</span>
+                <span class="flex items-center gap-2">
+                  ${
+                    isCompleted
+                      ? '<span class="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[7px] font-extrabold text-emerald-400">✓ Selesai (+1)</span>'
+                      : ""
+                  }
+                  <span class="grid size-9 place-items-center rounded-full ${stage.focus ? "bg-emerald-800 text-emerald-100" : "bg-slate-100 text-slate-500"} text-base transition group-hover:rotate-90">+</span>
+                </span>
               </span>
               <span class="mt-5 flex items-end justify-between gap-4">
                 <span class="grid size-12 place-items-center rounded-2xl ${stage.focus ? "bg-emerald-800 text-emerald-200" : "bg-emerald-50 text-emerald-700"} text-xl">${stage.icon}</span>
@@ -2066,8 +2251,8 @@
               <strong class="mt-5 block text-base">${escapeHtml(stage.title)}</strong>
               <span class="mt-1 block text-[9px] font-bold ${stage.focus ? "text-emerald-200" : "text-slate-700"}">${escapeHtml(stage.subtitle)}</span>
               <span class="mt-3 block text-[9px] leading-5 ${stage.focus ? "text-emerald-50/80" : "text-slate-500"}">${escapeHtml(stage.description)}</span>
-            </button>`,
-          )
+            </button>`;
+          })
           .join("");
 
         el("education-references").innerHTML = educationReferences
@@ -2076,7 +2261,7 @@
               <strong class="text-sm">${escapeHtml(reference.title)}</strong>
               <p class="mt-3 text-[9px] leading-5 text-slate-500">${escapeHtml(reference.description)}</p>
               <span class="mt-auto pt-5 text-[8px] font-extrabold text-emerald-700">Kunjungi sumber ↗</span>
-            </a>`,
+            </a>`
           )
           .join("");
 
@@ -2087,67 +2272,204 @@
           modal.classList.add("hidden");
           modal.classList.remove("flex");
           document.body.style.overflow = "";
+          renderEducation();
         }
 
         function renderEducationModal(index) {
           activeStage = index;
           const stage = educationStages[index];
+          const st = quizStageState[index] || { selected: null, checked: false };
+          const isCorrect = st.checked && st.selected === stage.correctIndex;
+          const isChecked = st.checked;
+          const score = getEducationQuizScore();
+
           el("education-modal-number").textContent = stage.icon;
-          el("education-modal-subtitle").textContent = `TAHAP ${stage.number} · RANTAI MAKANAN`;
+          el("education-modal-subtitle").textContent = `TAHAP ${stage.number} · RANTAI PASOK MAKANAN`;
           el("education-modal-title").textContent = stage.title;
+
           el("education-modal-content").innerHTML = `
-            <span class="text-[8px] font-extrabold tracking-widest text-slate-400 uppercase">${escapeHtml(stage.subtitle)}</span>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-[8px] font-extrabold tracking-widest text-slate-400 uppercase">${escapeHtml(stage.subtitle)}</span>
+              <span class="flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-[8px] font-extrabold text-emerald-800">
+                ⭐ Skor Kuis: ${score} / 5
+              </span>
+            </div>
             <p class="mt-3 max-w-2xl text-sm leading-7 font-bold text-slate-800">${escapeHtml(stage.description)}</p>
             <div class="mt-6 grid gap-2 sm:grid-cols-2">
-              ${stage.points.map((point, pointIndex) => `<div class="flex gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3"><span class="grid size-6 shrink-0 place-items-center rounded-full bg-emerald-100 text-[8px] font-extrabold text-emerald-700">${pointIndex + 1}</span><p class="text-[9px] leading-5 text-slate-600">${escapeHtml(point)}</p></div>`).join("")}
+              ${stage.points
+                .map(
+                  (point, pointIndex) =>
+                    `<div class="flex gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3">
+                      <span class="grid size-6 shrink-0 place-items-center rounded-full bg-emerald-100 text-[8px] font-extrabold text-emerald-700">${pointIndex + 1}</span>
+                      <p class="text-[9px] leading-5 text-slate-600">${escapeHtml(point)}</p>
+                    </div>`
+                )
+                .join("")}
             </div>
-            <div class="mt-6 rounded-2xl border ${stage.focus ? "border-emerald-200 bg-emerald-950 text-white" : "border-slate-200 bg-slate-50"} p-4 sm:p-5">
-              <span class="text-[8px] font-extrabold tracking-widest ${stage.focus ? "text-emerald-300" : "text-emerald-700"} uppercase">Aktivitas interaktif</span>
-              <strong class="mt-2 block text-base">${escapeHtml(stage.activityTitle)}</strong>
-              <p class="mt-2 text-[10px] leading-6 ${stage.focus ? "text-emerald-50" : "text-slate-600"}">${escapeHtml(stage.activityPrompt)}</p>
-              <div class="mt-4 grid gap-2">
-                ${stage.options.map((option, optionIndex) => `<button type="button" data-education-option="${optionIndex}" class="min-h-12 rounded-xl border ${stage.focus ? "border-emerald-800 bg-emerald-900/50 text-emerald-50 hover:border-emerald-400" : "border-slate-200 bg-white text-slate-600 hover:border-emerald-300"} px-4 text-left text-[10px] font-bold transition"><span class="mr-3 inline-grid size-6 place-items-center rounded-full border border-current text-[8px]">${String.fromCharCode(65 + optionIndex)}</span>${escapeHtml(option.label)}</button>`).join("")}
+
+            <div class="mt-6 rounded-2xl border ${stage.focus ? "border-emerald-300 bg-emerald-950 text-white" : "border-slate-200 bg-slate-50"} p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[8px] font-extrabold tracking-widest ${stage.focus ? "text-emerald-300" : "text-emerald-700"} uppercase">
+                  Aktivitas Kuis Interaktif
+                </span>
+                <span class="rounded-full ${stage.focus ? "bg-emerald-800/80 text-emerald-200" : "bg-slate-200 text-slate-600"} px-2.5 py-0.5 text-[8px] font-bold">
+                  Tahap ${index + 1} dari ${educationStages.length}
+                </span>
               </div>
-              <div id="education-feedback" class="mt-4 hidden rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-[10px] leading-6 text-emerald-950"></div>
+              <strong class="mt-2 block text-base">${escapeHtml(stage.activityTitle)}</strong>
+              <p class="mt-2 text-[10px] leading-6 ${stage.focus ? "text-emerald-100" : "text-slate-600"}">${escapeHtml(stage.activityPrompt)}</p>
+
+              <div class="mt-4 grid gap-2">
+                ${stage.options
+                  .map((option, optionIndex) => {
+                    const isSelected = st.selected === optionIndex;
+                    const isOptionCorrect = optionIndex === stage.correctIndex;
+                    let styleClass = "";
+                    let badge = "";
+
+                    if (!isChecked) {
+                      styleClass = isSelected
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-950 shadow-sm"
+                        : stage.focus
+                        ? "border-emerald-800 bg-emerald-900/50 text-emerald-50 hover:border-emerald-400"
+                        : "border-slate-200 bg-white text-slate-600 hover:border-emerald-300";
+                    } else {
+                      if (isOptionCorrect) {
+                        styleClass = "border-emerald-500 bg-emerald-50 text-emerald-950 font-bold";
+                        badge = '<span class="ml-auto text-[8px] font-extrabold text-emerald-700">✓ TEPAT (+1)</span>';
+                      } else if (isSelected && !isOptionCorrect) {
+                        styleClass = "border-rose-400 bg-rose-50 text-rose-950 font-bold";
+                        badge = '<span class="ml-auto text-[8px] font-extrabold text-rose-600">✕ BELUM TEPAT</span>';
+                      } else {
+                        styleClass = "border-slate-200 bg-white/70 text-slate-400 opacity-60";
+                      }
+                    }
+
+                    return `
+                      <button
+                        type="button"
+                        data-education-option="${optionIndex}"
+                        ${isChecked ? "disabled" : ""}
+                        class="flex min-h-12 items-center rounded-xl border px-4 py-3 text-left text-[10px] font-bold transition ${styleClass}"
+                      >
+                        <span class="mr-3 inline-grid size-6 shrink-0 place-items-center rounded-full border border-current text-[8px]">
+                          ${String.fromCharCode(65 + optionIndex)}
+                        </span>
+                        <span class="flex-1">${escapeHtml(option.label)}</span>
+                        ${badge}
+                      </button>
+                    `;
+                  })
+                  .join("")}
+              </div>
+
+              <div class="mt-4">
+                ${
+                  !isChecked
+                    ? `<button
+                        id="btn-check-quiz"
+                        type="button"
+                        ${st.selected === null ? "disabled" : ""}
+                        class="h-11 w-full rounded-xl bg-emerald-600 text-[10px] font-extrabold text-white transition hover:bg-emerald-700 disabled:opacity-50"
+                      >
+                        Periksa Jawaban
+                      </button>`
+                    : isCorrect
+                    ? `<div class="rounded-xl border border-emerald-300 bg-emerald-100/90 p-4 text-[10px] leading-6 text-emerald-950">
+                        <div class="flex items-center gap-2 font-extrabold text-emerald-800 text-[11px]">
+                          <span>🎉 Jawaban Tepat! (+1 Poin)</span>
+                        </div>
+                        <p class="mt-1">${escapeHtml(stage.options[stage.correctIndex].feedback)}</p>
+                      </div>`
+                    : `<div class="rounded-xl border border-rose-300 bg-rose-50 p-4 text-[10px] leading-6 text-rose-950">
+                        <div class="flex items-center justify-between">
+                          <span class="font-extrabold text-rose-800 text-[11px]">Belum tepat. Coba periksa petunjuk:</span>
+                          <button id="btn-retry-quiz" type="button" class="rounded-lg bg-rose-600 px-3 py-1 text-[8px] font-extrabold text-white hover:bg-rose-700 transition">
+                            🔄 Coba Lagi
+                          </button>
+                        </div>
+                        <p class="mt-1">${escapeHtml(stage.options[st.selected].feedback)}</p>
+                      </div>`
+                }
+              </div>
             </div>
+
             <div class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4">
               <span class="text-[8px] font-extrabold tracking-widest text-amber-800 uppercase">Coba pikirkan</span>
               <p class="mt-2 text-[10px] leading-6 font-bold text-slate-700">${escapeHtml(stage.reflection)}</p>
-            </div>`;
+            </div>
+          `;
 
           el("education-modal-prev").disabled = index === 0;
           el("education-modal-prev").classList.toggle("opacity-40", index === 0);
-          el("education-modal-next").textContent = index === educationStages.length - 1 ? "Kembali ke daftar" : "Tahap berikutnya";
-          el("education-modal-content").querySelectorAll("[data-education-option]").forEach((button) => {
-            button.addEventListener("click", () => {
-              el("education-modal-content").querySelectorAll("[data-education-option]").forEach((item) => item.classList.remove("border-emerald-500", "bg-emerald-50", "text-emerald-900"));
-              button.classList.add("border-emerald-500", "bg-emerald-50", "text-emerald-900");
-              const feedback = el("education-feedback");
-              feedback.textContent = stage.options[Number(button.dataset.educationOption)].feedback;
-              feedback.classList.remove("hidden");
+          el("education-modal-next").textContent =
+            index === educationStages.length - 1 ? "Selesai" : "Tahap berikutnya";
+
+          // Option selection clicks
+          el("education-modal-content")
+            .querySelectorAll("[data-education-option]")
+            .forEach((button) => {
+              button.addEventListener("click", () => {
+                st.selected = Number(button.dataset.educationOption);
+                renderEducationModal(index);
+              });
             });
-          });
+
+          // Check answer button
+          const btnCheck = el("btn-check-quiz");
+          if (btnCheck) {
+            btnCheck.addEventListener("click", () => {
+              if (st.selected !== null) {
+                st.checked = true;
+                if (st.selected === stage.correctIndex) {
+                  const newScore = getEducationQuizScore();
+                  if (newScore === 5) {
+                    renderConfetti();
+                    showToast("🏆 Sempurna! Semua kuis edukasi berhasil diselesaikan!");
+                  } else {
+                    showToast("✓ Jawaban tepat! +1 Poin Kuis");
+                  }
+                }
+                renderEducationModal(index);
+              }
+            });
+          }
+
+          // Retry button
+          const btnRetry = el("btn-retry-quiz");
+          if (btnRetry) {
+            btnRetry.addEventListener("click", () => {
+              st.checked = false;
+              renderEducationModal(index);
+            });
+          }
         }
 
-        el("education-stages").querySelectorAll("[data-education-stage]").forEach((button) => {
-          button.addEventListener("click", () => {
-            renderEducationModal(Number(button.dataset.educationStage));
-            el("education-modal").classList.remove("hidden");
-            el("education-modal").classList.add("flex");
-            document.body.style.overflow = "hidden";
+        el("education-stages")
+          .querySelectorAll("[data-education-stage]")
+          .forEach((button) => {
+            button.addEventListener("click", () => {
+              renderEducationModal(Number(button.dataset.educationStage));
+              el("education-modal").classList.remove("hidden");
+              el("education-modal").classList.add("flex");
+              document.body.style.overflow = "hidden";
+            });
           });
-        });
-        el("education-modal-close").addEventListener("click", closeEducationModal);
-        el("education-modal").addEventListener("click", (event) => {
+
+        el("education-modal-close").onclick = closeEducationModal;
+        el("education-modal").onclick = (event) => {
           if (event.target === el("education-modal")) closeEducationModal();
-        });
-        el("education-modal-prev").addEventListener("click", () => {
+        };
+        el("education-modal-prev").onclick = () => {
           if (activeStage > 0) renderEducationModal(activeStage - 1);
-        });
-        el("education-modal-next").addEventListener("click", () => {
-          if (activeStage < educationStages.length - 1) renderEducationModal(activeStage + 1);
-          else closeEducationModal();
-        });
+        };
+        el("education-modal-next").onclick = () => {
+          if (activeStage < educationStages.length - 1) {
+            renderEducationModal(activeStage + 1);
+          } else {
+            closeEducationModal();
+          }
+        };
       }
 
       function renderConfetti() {
@@ -2715,6 +3037,7 @@
          ------------------------------------------------------------ */
       function init() {
         renderManualCategories();
+        loadManualProductDatabase();
         renderEducation();
         renderConfetti();
         bindEvents();
