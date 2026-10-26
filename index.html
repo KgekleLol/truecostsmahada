@@ -1146,125 +1146,122 @@
           <span id="impact-note" class="mt-1 block text-[9px] text-slate-500"></span>
         </div>
 
-        <div class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <div class="rounded-2xl border border-slate-200 p-3">
-            <svg
-              aria-hidden="true"
-              fill="none"
-              height="18"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-              width="18"
-            >
-              <path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.2-1.8A5 5 0 0 0 7 18Zm2 3h6" />
-            </svg>
-            <strong id="impact-carbon" class="mt-4 block text-sm"></strong>
-            <small class="text-[7px] text-slate-400">Emisi</small>
-          </div>
-          <div class="rounded-2xl border border-slate-200 p-3">
-            <svg
-              aria-hidden="true"
-              fill="none"
-              height="18"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-              width="18"
-            >
-              <path d="M9 3h6v4l2 2.5v9a2.5 2.5 0 0 1-2.5 2.5h-5A2.5 2.5 0 0 1 7 18.5v-9L9 7Zm0 4h6" />
-            </svg>
-            <strong id="impact-plastic" class="mt-4 block text-sm"></strong>
-            <small class="text-[7px] text-slate-400">Plastik</small>
-          </div>
-          <div class="rounded-2xl border border-slate-200 p-3">
-            <svg
-              aria-hidden="true"
-              fill="none"
-              height="18"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-              width="18"
-            >
-              <path d="m12 3 7 4v8l-7 4-7-4V7Zm-7 4 7 4 7-4m-7 4v8" />
-            </svg>
-            <strong id="impact-sugar" class="mt-4 block text-sm"></strong>
-            <small class="text-[7px] text-slate-400">Gula</small>
-          </div>
-          <div class="rounded-2xl border border-slate-200 p-3">
-            <svg
-              aria-hidden="true"
-              fill="none"
-              height="18"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-              width="18"
-            >
-              <path d="M8 9h8l1 11H7Zm1 0V5h6v4" />
-            </svg>
-            <strong id="impact-sodium" class="mt-4 block text-sm"></strong>
-            <small class="text-[7px] text-slate-400">Natrium</small>
-          </div>
-        </div>
+        <!-- Impact Metrics Container (Dynamic Traffic Light & Contextual Literacy) -->
+        <div id="impact-metrics-container" class="mt-3 grid gap-2 sm:grid-cols-2"></div>
 
         <div class="mt-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-[10px] leading-5">
           <strong class="block text-amber-700">Estimasi, bukan nilai mutlak</strong>
-          Nilai dapat berubah menurut merek, porsi, bahan, proses, dan jarak distribusi.
+          Warna adalah alat refleksi cepat, bukan label “aman” atau “tidak aman”. Ambang karbon dan plastik membandingkan kemasan dalam database; acuan gula dan natrium mengikuti WHO.
         </div>
 
-        <a
-          id="impact-source"
-          class="mt-3 flex items-center justify-between rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-[9px] font-bold text-emerald-800"
-          href="https://agribalyse.ademe.fr/"
-          rel="noreferrer"
-          target="_blank"
-        >
-          <span id="impact-source-label"></span>
-          <svg
-            aria-hidden="true"
-            fill="none"
-            height="15"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="1.8"
-            viewBox="0 0 24 24"
-            width="15"
-          >
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </a>
+        <!-- Proyeksi Hemat / Tabungan -->
+        <div class="mt-3 rounded-2xl bg-emerald-950 p-5 text-white">
+          <div class="flex items-start gap-3">
+            <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-400 text-emerald-950">
+              <svg class="size-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M19.5 4.5c-7.2.1-12 2.8-13.5 7.6-1 3.2.8 6.1 4.1 6.4 5.9.5 9.3-5.2 9.4-14ZM5 21c1.5-5.8 5.3-9.4 10.7-11.7"/></svg>
+            </span>
+            <span>
+              <span class="text-[8px] font-extrabold tracking-widest text-emerald-300 uppercase">PROYEKSI HEMAT</span>
+              <strong id="impact-savings" class="mt-1 block text-xl">Rp 384.000 / semester</strong>
+            </span>
+          </div>
+          <p id="impact-savings-detail" class="mt-3 text-[9px] leading-5 text-emerald-100">
+            Simulasi 16 minggu aktif × 4 pembelian per minggu × Rp 6.000. Sesuaikan dengan harga kantin dan kebiasaanmu.
+          </p>
+          <div class="mt-4 grid grid-cols-2 gap-2">
+            <label class="text-[8px] font-bold text-emerald-100">
+              Harga per pembelian (Rp)
+              <input
+                id="input-snack-price"
+                type="number"
+                min="0"
+                step="500"
+                value="6000"
+                class="mt-2 min-h-11 w-full rounded-xl border border-emerald-700 bg-emerald-900 px-3 text-[10px] font-extrabold text-white outline-none focus:border-emerald-300"
+              />
+            </label>
+            <label class="text-[8px] font-bold text-emerald-100">
+              Pembelian / minggu
+              <input
+                id="input-snacks-per-week"
+                type="number"
+                min="0"
+                max="7"
+                value="4"
+                class="mt-2 min-h-11 w-full rounded-xl border border-emerald-700 bg-emerald-900 px-3 text-[10px] font-extrabold text-white outline-none focus:border-emerald-300"
+              />
+            </label>
+          </div>
+        </div>
 
-        <div class="mt-5 grid gap-2 sm:grid-cols-2">
+        <!-- Snack Swap (Pilih Solusi Alternatif) -->
+        <div class="mt-3 rounded-2xl border border-slate-200 p-4">
+          <span class="text-[8px] font-extrabold tracking-widest text-emerald-700 uppercase">SNACK SWAP · PILIH SOLUSI</span>
+          <strong class="mt-2 block text-sm">Apa alternatif paling realistis sekarang?</strong>
+          <div id="alternative-options-container" class="mt-3 grid gap-2"></div>
+          <div id="alternative-feedback" class="mt-3 rounded-xl p-3 text-[8px] leading-4" hidden></div>
+        </div>
+
+        <!-- Rujukan & Keyakinan Data -->
+        <div id="impact-source-container" class="mt-3"></div>
+
+        <div class="mt-3 grid grid-cols-2 gap-2 text-[8px] font-bold">
+          <a
+            class="rounded-xl border border-slate-200 p-3 text-slate-600 hover:border-emerald-300 hover:text-emerald-800 transition"
+            href="https://www.who.int/publications/i/item/9789241549028"
+            rel="noreferrer"
+            target="_blank"
+          >
+            WHO · Pedoman gula bebas
+          </a>
+          <a
+            class="rounded-xl border border-slate-200 p-3 text-slate-600 hover:border-emerald-300 hover:text-emerald-800 transition"
+            href="https://marinedebris.noaa.gov/discover-issue"
+            rel="noreferrer"
+            target="_blank"
+          >
+            NOAA · Sampah laut
+          </a>
+          <a
+            class="rounded-xl border border-slate-200 p-3 text-slate-600 hover:border-emerald-300 hover:text-emerald-800 transition"
+            href="https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator-calculations-and-references"
+            rel="noreferrer"
+            target="_blank"
+          >
+            EPA · Ekuivalensi emisi
+          </a>
+          <a
+            class="rounded-xl border border-slate-200 p-3 text-slate-600 hover:border-emerald-300 hover:text-emerald-800 transition"
+            href="https://www.who.int/news-room/fact-sheets/detail/salt-reduction"
+            rel="noreferrer"
+            target="_blank"
+          >
+            WHO · Pedoman natrium
+          </a>
+        </div>
+
+        <!-- Tombol Aksi: Primary Hijau vs Secondary Grey-out -->
+        <div class="mt-5 grid gap-2">
           <button
             id="btn-cancel-buy"
-            class="h-13 rounded-2xl bg-red-500 text-[10px] font-extrabold text-white disabled:opacity-50"
+            class="flex h-14 items-center justify-center gap-3 rounded-2xl bg-emerald-500 text-[10px] font-extrabold text-white shadow-lg shadow-emerald-200 transition hover:bg-emerald-600 disabled:opacity-50"
             type="button"
           >
-            Gak Jadi Beli
+            <svg class="size-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.5 4.5c-7.2.1-12 2.8-13.5 7.6-1 3.2.8 6.1 4.1 6.4 5.9.5 9.3-5.2 9.4-14ZM5 21c1.5-5.8 5.3-9.4 10.7-11.7"/></svg>
+            Gak Jadi Beli &amp; Tabung
           </button>
           <button
             id="btn-confirm-buy"
-            class="h-13 rounded-2xl bg-emerald-500 text-[10px] font-extrabold text-white disabled:opacity-50"
+            class="h-13 rounded-2xl border border-slate-300 bg-white text-[10px] font-extrabold text-slate-500 transition hover:border-slate-400 hover:text-slate-700 disabled:opacity-50"
             type="button"
           >
-            Jadi Beli
+            Tetap Beli
           </button>
         </div>
       </section>
     </div>
 
-    <!-- ================= OVERLAY: CELEBRATION ================= -->
+    <!-- ================= OVERLAY: CELEBRATION (Reflective Micro-Reward) ================= -->
     <div
       id="overlay-celebration"
       class="fixed inset-0 z-[60] grid place-items-center bg-emerald-950 p-5 text-white"
@@ -1287,10 +1284,28 @@
             <path d="M19.5 4.5c-7.2.1-12 2.8-13.5 7.6-1 3.2.8 6.1 4.1 6.4 5.9.5 9.3-5.2 9.4-14ZM5 21c1.5-5.8 5.3-9.4 10.7-11.7" />
           </svg>
         </span>
-        <h2 id="celebrate-text" class="mt-8 text-3xl font-extrabold leading-tight"></h2>
+        <h2 id="celebrate-title" class="mt-8 text-3xl font-extrabold leading-tight">Hebat, pilihan sadarmu langsung tercatat.</h2>
+        <p id="celebrate-desc" class="mt-4 text-[11px] leading-6 text-emerald-100"></p>
+        <div class="mt-6 grid grid-cols-3 gap-2 text-left">
+          <div class="rounded-2xl border border-emerald-700 bg-emerald-900 p-3">
+            <strong id="celebrate-carbon-val" class="block text-[11px]">0 g</strong>
+            <span class="mt-1 block text-[7px] leading-3 text-emerald-200">CO₂e dihindari</span>
+          </div>
+          <div class="rounded-2xl border border-emerald-700 bg-emerald-900 p-3">
+            <strong id="celebrate-plastic-val" class="block text-[11px]">0 g</strong>
+            <span class="mt-1 block text-[7px] leading-3 text-emerald-200">Plastik dihindari</span>
+          </div>
+          <div class="rounded-2xl border border-emerald-700 bg-emerald-900 p-3">
+            <strong id="celebrate-savings-val" class="block text-[11px]">Rp 0</strong>
+            <span class="mt-1 block text-[7px] leading-3 text-emerald-200">Potensi ditabung</span>
+          </div>
+        </div>
+        <p class="mt-5 text-[8px] leading-4 text-emerald-300">
+          Nilai adalah estimasi keputusan hari ini berdasarkan data kemasan dan harga yang kamu masukkan, bukan hasil audit lingkungan.
+        </p>
         <button
           id="btn-back-dashboard"
-          class="mx-auto mt-8 flex h-13 items-center gap-4 rounded-2xl bg-white px-6 text-[10px] font-extrabold text-emerald-950"
+          class="mx-auto mt-8 flex h-13 items-center gap-4 rounded-2xl bg-white px-6 text-[10px] font-extrabold text-emerald-950 transition hover:bg-emerald-50 active:scale-95"
           type="button"
         >
           Kembali ke Dashboard
@@ -1357,6 +1372,53 @@
       const SESSION_KEYS = [TRIAL_MODE_KEY, "truecost-trial-session-v1", "truecost-temporary-token"];
       const AGRIBALYSE = "https://agribalyse.ademe.fr/";
       const OPEN_FOOD_FACTS = "https://world.openfoodfacts.org/";
+      const WHO_SUGAR_GUIDELINE = "https://www.who.int/publications/i/item/9789241549028";
+      const NOAA_DEBRIS_REFERENCE = "https://marinedebris.noaa.gov/discover-issue";
+      const EPA_EQUIVALENCIES_REFERENCE = "https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator-calculations-and-references";
+      const WHO_SODIUM_GUIDELINE = "https://www.who.int/news-room/fact-sheets/detail/salt-reduction";
+      const DAILY_SUGAR_REFERENCE_GRAMS = 50;
+      const DAILY_SODIUM_REFERENCE_MG = 2000;
+      const SMARTPHONE_CHARGE_CO2_GRAMS = 3.15;
+      const ACTIVE_SEMESTER_WEEKS = 16;
+
+      const IMPACT_TONES = {
+        low: {
+          card: "border-emerald-200 bg-emerald-50 text-emerald-950",
+          badge: "bg-emerald-100 text-emerald-800",
+          label: "Rendah",
+        },
+        medium: {
+          card: "border-amber-200 bg-amber-50 text-amber-950",
+          badge: "bg-amber-100 text-amber-800",
+          label: "Sedang",
+        },
+        high: {
+          card: "border-red-200 bg-red-50 text-red-950",
+          badge: "bg-red-100 text-red-800",
+          label: "Tinggi",
+        },
+      };
+
+      function metricLevel(value, mediumThreshold, highThreshold) {
+        if (value > highThreshold) return "high";
+        if (value > mediumThreshold) return "medium";
+        return "low";
+      }
+
+      function formatRupiah(value) {
+        return new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+          maximumFractionDigits: 0,
+        }).format(value);
+      }
+
+      function dataQualityLabel(confidence) {
+        if (confidence === "low") return "Estimasi sekunder";
+        if (confidence === "medium") return "Estimasi rujukan menengah";
+        if (confidence === "high") return "Data rujukan kuat";
+        return "Data rujukan standar";
+      }
 
       /* ------------------------------------------------------------
          2. KATEGORI JAJANAN (data terpusat)
@@ -1555,6 +1617,9 @@
         modelReady: false,
         stream: null,
         busy: false,
+        snackPrice: 6000,
+        snacksPerWeek: 4,
+        alternativeChoice: null,
       };
 
       const detectedProduct = () => productsById[state.detectedKey] || categories[0];
@@ -2260,18 +2325,189 @@
       /* ------------------------------------------------------------
          14. DAMPAK & KEPUTUSAN
          ------------------------------------------------------------ */
-      function openImpact() {
+      function updateSavingsPreview() {
+        const semesterSavings = Math.max(0, state.snackPrice) * Math.max(0, state.snacksPerWeek) * ACTIVE_SEMESTER_WEEKS;
+        const savingsEl = el("impact-savings");
+        const detailEl = el("impact-savings-detail");
+        if (savingsEl) savingsEl.textContent = `${formatRupiah(semesterSavings)} / semester`;
+        if (detailEl) detailEl.textContent = `Simulasi ${ACTIVE_SEMESTER_WEEKS} minggu aktif × ${state.snacksPerWeek} pembelian per minggu × ${formatRupiah(state.snackPrice)}. Sesuaikan dengan harga kantin dan kebiasaanmu.`;
+      }
+
+      function renderAlternativeChoices(isDrink) {
+        const options = isDrink
+          ? [
+              {
+                id: "refill",
+                label: "Isi ulang botol minum sendiri",
+                feedback: "Pilihan paling kuat: mengurangi kemasan sekali pakai sekaligus menjaga uang saku.",
+              },
+              {
+                id: "smaller",
+                label: "Pilih porsi sesuai kebutuhan",
+                feedback: "Langkah baik untuk mengurangi konsumsi berlebih, tetapi kemasan sekali pakai masih tersisa.",
+              },
+              {
+                id: "same",
+                label: "Tetap pilih produk yang sama",
+                feedback: "Belum ada pengurangan langsung. Coba jeda dan cek apakah haus dapat dipenuhi dengan air isi ulang.",
+              },
+            ]
+          : [
+              {
+                id: "refill",
+                label: "Pilih bekal atau camilan minim kemasan",
+                feedback: "Pilihan paling kuat: kebutuhan makan tetap terpenuhi dengan sampah kemasan lebih sedikit.",
+              },
+              {
+                id: "smaller",
+                label: "Pilih porsi kecil sesuai kebutuhan",
+                feedback: "Langkah baik untuk mencegah sisa makanan dan pembelian impulsif.",
+              },
+              {
+                id: "same",
+                label: "Tetap pilih produk yang sama",
+                feedback: "Belum ada pengurangan langsung. Coba beri jeda satu menit sebelum memutuskan.",
+              },
+            ];
+
+        const container = el("alternative-options-container");
+        if (!container) return;
+        container.innerHTML = options.map((opt, idx) => {
+          const isSelected = state.alternativeChoice === opt.id;
+          const activeClass = isSelected
+            ? (idx === 0 ? "border-emerald-500 bg-emerald-50 text-emerald-950 font-extrabold" : "border-amber-400 bg-amber-50 text-amber-950 font-extrabold")
+            : "border-slate-200 text-slate-700 hover:border-emerald-300";
+          return `
+            <button
+              type="button"
+              class="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border px-4 text-left text-[9px] transition ${activeClass}"
+              data-alt-choice="${opt.id}"
+            >
+              <span>${escapeHtml(opt.label)}</span>
+              ${isSelected ? `<svg class="size-4 shrink-0 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg>` : ''}
+            </button>
+          `;
+        }).join("");
+
+        container.querySelectorAll("[data-alt-choice]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            state.alternativeChoice = btn.dataset.altChoice;
+            renderAlternativeChoices(isDrink);
+          });
+        });
+
+        const feedbackEl = el("alternative-feedback");
+        if (feedbackEl) {
+          const selectedOpt = options.find((o) => o.id === state.alternativeChoice);
+          if (selectedOpt) {
+            feedbackEl.hidden = false;
+            feedbackEl.className = `mt-3 rounded-xl p-3 text-[8px] leading-4 ${state.alternativeChoice === "refill" ? "bg-emerald-50 text-emerald-900 border border-emerald-200" : "bg-amber-50 text-amber-950 border border-amber-200"}`;
+            feedbackEl.textContent = selectedOpt.feedback;
+          } else {
+            feedbackEl.hidden = true;
+          }
+        }
+      }
+
+      function renderImpactOverview() {
         const product = detectedProduct();
         const manualSelect = el("manual-product-select");
         if (manualSelect) manualSelect.value = product.id;
         el("impact-name").textContent = state.detectedLabelOverride || product.label;
         el("impact-note").textContent = product.nutritionNote;
-        el("impact-carbon").textContent = product.carbonRange;
-        el("impact-plastic").textContent = `${product.plastic} g`;
-        el("impact-sugar").textContent = `${product.sugar} g`;
-        el("impact-sodium").textContent = `${product.sodium} mg`;
-        el("impact-source").href = product.sourceUrl;
-        el("impact-source-label").textContent = `Rujukan: ${product.source}`;
+
+        const isDrink = /drink|water|tea|coffee|dairy|isotonic|juice|milk|susu|minuman|teh|botol|cola|yogurt/i.test(
+          `${product.group} ${product.label}`
+        );
+        const phoneChargeEquivalent = Math.max(1, Math.round(product.carbon / SMARTPHONE_CHARGE_CO2_GRAMS));
+
+        updateSavingsPreview();
+
+        const metrics = [
+          {
+            icon: `<svg class="size-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.2-1.8A5 5 0 0 0 7 18Zm2 3h6"/></svg>`,
+            value: product.carbonRange,
+            label: "Karbon kemasan",
+            level: metricLevel(product.carbon, 30, 75),
+            context: `Setara sekitar ${phoneChargeEquivalent} kali pengisian penuh ponsel menurut ekuivalensi energi EPA.`,
+          },
+          {
+            icon: `<svg class="size-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 3h6v4l2 2.5v9a2.5 2.5 0 0 1-2.5 2.5h-5A2.5 2.5 0 0 1 7 18.5v-9L9 7Zm0 4h6"/></svg>`,
+            value: `${product.plastic} g`,
+            label: "Plastik",
+            level: metricLevel(product.plastic, 5, 15),
+            context: product.plastic > 0
+              ? (/bottle|botol|PET/i.test(`${product.packFormat || ''} ${product.plasticType || ''}`)
+                ? "Botol plastik diperkirakan bertahan sekitar 450 tahun di lingkungan laut (NOAA)."
+                : "Plastik terurai sangat lambat; acuan NOAA untuk botol plastik adalah sekitar 450 tahun di laut.")
+              : "Tidak ada massa plastik utama yang tercatat pada kemasan ini.",
+          },
+          {
+            icon: `<svg class="size-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="m12 3 7 4v8l-7 4-7-4V7Zm-7 4 7 4 7-4m-7 4v8"/></svg>`,
+            value: `${product.sugar} g`,
+            label: "Gula",
+            level: metricLevel(product.sugar, 10, 25),
+            context: `${Math.round((product.sugar / DAILY_SUGAR_REFERENCE_GRAMS) * 100)}% dari batas maksimum 50 g/hari pada diet 2.000 kkal (WHO).`,
+          },
+          {
+            icon: `<svg class="size-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 9h8l1 11H7Zm1 0V5h6v4"/></svg>`,
+            value: `${product.sodium} mg`,
+            label: "Natrium",
+            level: metricLevel(product.sodium, 120, 400),
+            context: `${Math.round((product.sodium / DAILY_SODIUM_REFERENCE_MG) * 100)}% dari batas maksimum 2.000 mg/hari untuk orang dewasa & remaja (WHO).`,
+          },
+        ];
+
+        const metricsContainer = el("impact-metrics-container");
+        if (metricsContainer) {
+          metricsContainer.innerHTML = metrics.map((m) => {
+            const tone = IMPACT_TONES[m.level];
+            return `
+              <div class="rounded-2xl border p-4 ${tone.card}">
+                <div class="flex items-start justify-between gap-3">
+                  <span class="grid size-9 place-items-center rounded-xl bg-white/70 text-slate-800">
+                    ${m.icon}
+                  </span>
+                  <span class="rounded-full px-2 py-1 text-[7px] font-extrabold uppercase tracking-wide ${tone.badge}">
+                    ${tone.label}
+                  </span>
+                </div>
+                <strong class="mt-4 block text-lg font-extrabold">${escapeHtml(m.value)}</strong>
+                <span class="mt-1 block text-[8px] font-extrabold uppercase tracking-wide opacity-70">
+                  ${escapeHtml(m.label)}
+                </span>
+                <p class="mt-3 text-[8px] leading-4 opacity-80">
+                  ${escapeHtml(m.context)}
+                </p>
+              </div>
+            `;
+          }).join("");
+        }
+
+        const sourceContainer = el("impact-source-container");
+        if (sourceContainer) {
+          if (product.sourceUrl) {
+            sourceContainer.innerHTML = `
+              <a class="flex items-center justify-between rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-[9px] font-bold text-emerald-800 hover:bg-emerald-100/70 transition" href="${escapeHtml(product.sourceUrl)}" target="_blank" rel="noreferrer">
+                <span>Rujukan: ${escapeHtml(product.source)} · <span class="font-normal text-emerald-700">${dataQualityLabel(product.confidence)}</span></span>
+                <svg class="size-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+              </a>
+            `;
+          } else {
+            sourceContainer.innerHTML = `
+              <div class="rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-[9px] font-bold text-emerald-800">
+                Rujukan: ${escapeHtml(product.source)} · <span class="font-normal text-emerald-700">${dataQualityLabel(product.confidence)}</span>
+              </div>
+            `;
+          }
+        }
+
+        renderAlternativeChoices(isDrink);
+      }
+
+      function openImpact() {
+        state.alternativeChoice = null;
+        renderImpactOverview();
         openModal("impact");
       }
 
@@ -2333,7 +2569,7 @@
           state.selectedDate = localDateKey(scannedAt);
           renderTracker();
           showPage("tracker");
-          if (decision === "cancelled") showCelebration(product.carbon);
+          if (decision === "cancelled") showCelebration(product.carbon, product);
           else showConfirmation();
         } catch (error) {
           console.error(error);
@@ -2355,8 +2591,28 @@
         confirmTimer = window.setTimeout(() => closeModal("confirm"), 2200);
       }
 
-      function showCelebration(carbon) {
-        el("celebrate-text").textContent = `Kamu mencegah ${carbon} gCO₂e emisi karbon.`;
+      function showCelebration(carbon, product) {
+        const prod = product || detectedProduct();
+        const price = state.snackPrice || 6000;
+        const titleEl = el("celebrate-title");
+        const descEl = el("celebrate-desc");
+        const carbonEl = el("celebrate-carbon-val");
+        const plasticEl = el("celebrate-plastic-val");
+        const savingsEl = el("celebrate-savings-val");
+
+        if (titleEl) titleEl.textContent = "Hebat, pilihan sadarmu langsung tercatat.";
+        if (descEl) {
+          let desc = `Kamu menghindari potensi ${prod.carbon} gCO₂e emisi kemasan`;
+          if (prod.plastic > 0) {
+            desc += ` dan ${prod.plastic} gram plastik masuk ke aliran sampah`;
+          }
+          desc += `. ${formatRupiah(price)} juga bisa tetap berada di tabunganmu hari ini.`;
+          descEl.textContent = desc;
+        }
+        if (carbonEl) carbonEl.textContent = `${prod.carbon} g`;
+        if (plasticEl) plasticEl.textContent = `${prod.plastic} g`;
+        if (savingsEl) savingsEl.textContent = formatRupiah(price);
+
         openModal("celebration");
       }
 
@@ -2407,6 +2663,22 @@
           closeModal("celebration");
           showPage("tracker");
         });
+
+        const priceInput = el("input-snack-price");
+        if (priceInput) {
+          priceInput.addEventListener("input", (e) => {
+            state.snackPrice = Math.max(0, Number(e.target.value) || 0);
+            updateSavingsPreview();
+          });
+        }
+        const weekInput = el("input-snacks-per-week");
+        if (weekInput) {
+          weekInput.addEventListener("input", (e) => {
+            state.snacksPerWeek = Math.min(7, Math.max(0, Number(e.target.value) || 0));
+            updateSavingsPreview();
+          });
+        }
+
         el("auth-form").addEventListener("submit", handleAuthSubmit);
         el("btn-auth-toggle").addEventListener("click", () => setRegisterMode(!registerMode));
         el("btn-trial").addEventListener("click", () => {
